@@ -1,19 +1,5 @@
-"""Backbone registry helpers for FiberRCNN."""
+"""Backbone registration for FiberRCNN (ConvNeXt, Swin)."""
 
-from .fiber_backbones import (
-    ConvNeXtWrapper,
-    SwinWrapper,
-    build_convnext_small_fpn_backbone,
-    build_convnext_tiny_fpn_backbone,
-    build_swin_s_fpn_backbone,
-    build_swin_t_fpn_backbone,
-)
+from . import fiber_backbones  # noqa: F401
 
-__all__ = [
-    "ConvNeXtWrapper",
-    "SwinWrapper",
-    "build_convnext_small_fpn_backbone",
-    "build_convnext_tiny_fpn_backbone",
-    "build_swin_s_fpn_backbone",
-    "build_swin_t_fpn_backbone",
-]
+__all__ = ["fiber_backbones"]

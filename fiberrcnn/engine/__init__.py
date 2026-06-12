@@ -1,12 +1,15 @@
-"""Training and inference engines for FiberRCNN."""
+"""FiberRCNN engine: training and inference."""
 
-from .inference import FiberInstance, FiberPredictor, ImagePrediction
-from .trainer import FiberTrainer, build_fiber_cfg
+from .trainer import FiberTrainer, build_fiber_cfg, set_seed, EarlyStoppingHook, WandbHook
+from .inference import FiberPredictor, FiberInstance, ImagePrediction
 
 __all__ = [
-    "FiberInstance",
-    "FiberPredictor",
     "FiberTrainer",
-    "ImagePrediction",
     "build_fiber_cfg",
+    "set_seed",
+    "EarlyStoppingHook",
+    "WandbHook",
+    "FiberPredictor",
+    "FiberInstance",
+    "ImagePrediction",
 ]

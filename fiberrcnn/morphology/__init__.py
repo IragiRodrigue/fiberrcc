@@ -11,9 +11,13 @@ from .fiber_morphology import (
     compute_porosity_coverage,
     count_intersections,
 )
+from .pore_analysis import PoreAnalyzer, PoreDescriptor, PoreNetworkResult
 
 __all__ = [
     "ImageMorphologyResult",
+    "PoreAnalyzer",
+    "PoreDescriptor",
+    "PoreNetworkResult",
     "PoreSizeStats",
     "compute_alignment_score",
     "compute_fiber_density",

@@ -11,6 +11,7 @@ from .misc import (
     set_deterministic,
 )
 from .logging import setup_loguru, TensorBoardLogger
+from .scale_calibration import CalibrationResult, ScaleBarDetector, ScaleCalibrator, parse_scale_text
 
 __all__ = [
     "set_deterministic",
@@ -25,4 +26,8 @@ __all__ = [
     "amp_autocast",
     "setup_loguru",
     "TensorBoardLogger",
+    "CalibrationResult",
+    "ScaleBarDetector",
+    "ScaleCalibrator",
+    "parse_scale_text",
 ]
