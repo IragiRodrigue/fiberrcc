@@ -1,0 +1,11 @@
+_BASE_: "base_fiber_rcnn.yaml"
+
+MODEL:
+  BACKBONE:
+    NAME: "build_resnet_fpn_backbone"
+  RESNETS:
+    DEPTH: 101
+SOLVER:
+  BASE_LR: 0.002
+  IMS_PER_BATCH: 2
+OUTPUT_DIR: "./output/fiberrcnn_r101_fpn"

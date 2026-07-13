@@ -1,0 +1,6 @@
+[console_scripts]
+fiberrcnn-convert = tools.convert_dataset:main
+fiberrcnn-eval = tools.evaluate:main
+fiberrcnn-infer = tools.infer:main
+fiberrcnn-train = tools.train:main
+fiberrcnn-viz = tools.visualize_dataset:main
