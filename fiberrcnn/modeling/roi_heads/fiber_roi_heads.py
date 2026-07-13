@@ -205,6 +205,20 @@ class FiberROIHeads(StandardROIHeads):
                     if loss is not None:
                         losses[key] = loss
 
+        quality_attrs = ("gt_has_bead", "gt_is_blurry", "gt_is_crossing")
+        if all(all(hasattr(p, attr) for attr in quality_attrs) for p in fg_only):
+            gt_quality = torch.stack(
+                [
+                    torch.cat([getattr(p, attr) for p in fg_only])
+                    for attr in quality_attrs
+                ],
+                dim=1,
+            )
+            if gt_quality.shape[0] > 0:
+                _, loss = self.fiber_quality_head(feats, gt_quality)
+                if loss is not None:
+                    losses["loss_quality"] = loss
+
         return losses
 
     # ------------------------------------------------------------------

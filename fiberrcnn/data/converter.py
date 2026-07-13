@@ -211,6 +211,16 @@ class LabelMeToCOCOFiber:
                     "fiber_orientation_deg": round(geom.fiber_orientation, 4),
                     "fiber_tortuosity_raw": round(geom.fiber_tortuosity, 4),
                 }
+                quality_flags = shape.get("flags", {})
+                annotation["has_bead"] = bool(
+                    shape.get("has_bead", quality_flags.get("has_bead", False))
+                )
+                annotation["is_blurry"] = bool(
+                    shape.get("is_blurry", quality_flags.get("is_blurry", False))
+                )
+                annotation["is_crossing"] = bool(
+                    shape.get("is_crossing", quality_flags.get("is_crossing", False))
+                )
                 dataset.annotations.append(annotation)
 
         logger.info(

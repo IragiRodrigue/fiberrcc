@@ -189,9 +189,20 @@ class TestInstancesToFiberList:
         inst.pred_masks = masks
 
         # Fake scalar predictions
-        for attr in ("pred_fiber_width", "pred_fiber_length", "pred_fiber_curvature",
-                     "pred_fiber_orientation", "pred_fiber_tortuosity"):
-            setattr(inst, attr, torch.tensor([5.0, 6.0]))
+        inst.pred_fiber_width = torch.tensor([0.05, 0.06])
+        inst.pred_fiber_length = torch.tensor([0.10, 0.20])
+        inst.pred_fiber_curvature = torch.tensor([5.0, 6.0])
+        inst.pred_fiber_orientation = torch.tensor([0.25, 0.50])
+        inst.pred_fiber_tortuosity = torch.tensor([0.05, 0.10])
+
+        # Fake normalized keypoints
+        inst.pred_keypoints = torch.tensor(
+            [
+                [[0.25, 0.50], [0.50, 0.75]],
+                [[0.10, 0.20], [0.90, 0.80]],
+            ],
+            dtype=torch.float32,
+        )
 
         # Fake quality flags
         inst.pred_has_bead    = torch.tensor([0.1, 0.9])
@@ -211,6 +222,14 @@ class TestInstancesToFiberList:
         # Confidence values
         assert fibers[0].confidence == pytest.approx(0.9)
         assert fibers[1].confidence == pytest.approx(0.75)
+        assert fibers[0].fiber_orientation == pytest.approx(45.0)
+        assert fibers[1].fiber_orientation == pytest.approx(90.0)
+        assert fibers[0].fiber_tortuosity == pytest.approx(1.05)
+        assert fibers[1].fiber_tortuosity == pytest.approx(1.10)
+        assert fibers[0].keypoints[0] == pytest.approx([75.0, 100.0])
+        assert fibers[1].keypoints[1] == pytest.approx([270.0, 160.0])
+        assert fibers[0].fiber_width > 0.0
+        assert fibers[1].fiber_length > fibers[0].fiber_length
 
     def test_empty_instances(self):
         try:

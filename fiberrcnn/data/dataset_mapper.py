@@ -80,6 +80,9 @@ def load_coco_fiber_json(
                 "fiber_curvature": ann.get("fiber_curvature", 0.0),
                 "fiber_orientation": ann.get("fiber_orientation", 0.0),
                 "fiber_tortuosity": ann.get("fiber_tortuosity", 1.0),
+                "has_bead": ann.get("has_bead", False),
+                "is_blurry": ann.get("is_blurry", False),
+                "is_crossing": ann.get("is_crossing", False),
                 "iscrowd": ann.get("iscrowd", 0),
             }
             objs.append(obj)
@@ -229,6 +232,14 @@ class FiberDatasetMapper:
             vals = [float(a.get(field_name, 0.0)) for a in anns]
             setattr(target, f"gt_{field_name}",
                     torch.tensor(vals, dtype=torch.float32))
+
+        for field_name in ("has_bead", "is_blurry", "is_crossing"):
+            vals = [float(bool(a.get(field_name, False))) for a in anns]
+            setattr(
+                target,
+                f"gt_{field_name}",
+                torch.tensor(vals, dtype=torch.float32),
+            )
 
         dataset_dict["instances"] = utils.filter_empty_instances(target)
         return dataset_dict
