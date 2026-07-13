@@ -1,23 +1,21 @@
-"""Prediction heads for FiberRCNN."""
-
 from .fiber_heads import (
-    FiberCurvatureHead,
-    FiberKeypointHead,
-    FiberLengthHead,
     FiberMaskHead,
-    FiberOrientationHead,
-    FiberQualityHead,
-    FiberTortuosityHead,
+    FiberKeypointHead,
     FiberWidthHead,
+    FiberLengthHead,
+    FiberCurvatureHead,
+    FiberOrientationHead,
+    FiberTortuosityHead,
+    FiberQualityHead,
 )
 
 __all__ = [
-    "FiberCurvatureHead",
-    "FiberKeypointHead",
-    "FiberLengthHead",
     "FiberMaskHead",
-    "FiberOrientationHead",
-    "FiberQualityHead",
-    "FiberTortuosityHead",
+    "FiberKeypointHead",
     "FiberWidthHead",
+    "FiberLengthHead",
+    "FiberCurvatureHead",
+    "FiberOrientationHead",
+    "FiberTortuosityHead",
+    "FiberQualityHead",
 ]

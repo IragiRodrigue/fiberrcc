@@ -1,29 +1,27 @@
-"""Morphological analysis for FiberRCNN predictions."""
+"""Morphological analysis module (post-processing, no neural networks)."""
 
 from .fiber_morphology import (
-    ImageMorphologyResult,
     PoreSizeStats,
-    compute_alignment_score,
+    ImageMorphologyResult,
+    compute_porosity_coverage,
     compute_fiber_density,
-    compute_image_morphology,
+    compute_alignment_score,
+    count_intersections,
     compute_junction_density,
     compute_pore_size_distribution,
-    compute_porosity_coverage,
-    count_intersections,
+    compute_image_morphology,
 )
-from .pore_analysis import PoreAnalyzer, PoreDescriptor, PoreNetworkResult
 
 __all__ = [
-    "ImageMorphologyResult",
-    "PoreAnalyzer",
-    "PoreDescriptor",
-    "PoreNetworkResult",
     "PoreSizeStats",
-    "compute_alignment_score",
+    "ImageMorphologyResult",
+    "compute_porosity_coverage",
     "compute_fiber_density",
-    "compute_image_morphology",
+    "compute_alignment_score",
+    "count_intersections",
     "compute_junction_density",
     "compute_pore_size_distribution",
-    "compute_porosity_coverage",
-    "count_intersections",
+    "compute_image_morphology",
 ]
+
+from .pore_analysis import PoreAnalyzer, PoreDescriptor, PoreNetworkResult

@@ -1,26 +1,20 @@
-"""Dataset utilities for FiberRCNN."""
+"""Data loading, registration, and conversion."""
 
-from .augmentation import (
-    add_charging_artefact,
-    add_gaussian_noise,
-    add_poisson_noise,
-    adjust_brightness_contrast,
-    apply_depth_blur,
-    apply_motion_blur,
-)
-from .converter import COCOFiberDataset, LabelMeToCOCOFiber
-from .dataset_mapper import FiberDatasetMapper, load_coco_fiber_json, register_coco_fiber_dataset
+from .converter import LabelMeToCOCOFiber, COCOFiberDataset
 
-__all__ = [
-    "COCOFiberDataset",
-    "FiberDatasetMapper",
-    "LabelMeToCOCOFiber",
-    "add_charging_artefact",
-    "add_gaussian_noise",
-    "add_poisson_noise",
-    "adjust_brightness_contrast",
-    "apply_depth_blur",
-    "apply_motion_blur",
-    "load_coco_fiber_json",
-    "register_coco_fiber_dataset",
-]
+try:
+    from .dataset_mapper import (
+        FiberDatasetMapper,
+        register_coco_fiber_dataset,
+        load_coco_fiber_json,
+    )
+    __all__ = [
+        "LabelMeToCOCOFiber",
+        "COCOFiberDataset",
+        "load_coco_fiber_json",
+        "FiberDatasetMapper",
+        "register_coco_fiber_dataset",
+    ]
+except ModuleNotFoundError:
+    # detectron2 not installed
+    __all__ = ["LabelMeToCOCOFiber", "COCOFiberDataset"]

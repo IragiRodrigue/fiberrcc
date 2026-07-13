@@ -1,5 +1,5 @@
 """
-FiberRCNN v2 - Advanced Scientific Nanofiber Analysis Framework
+FiberRCNN v2 — Advanced Scientific Nanofiber Analysis Framework
 ================================================================
 Importing this package registers all custom Detectron2 components:
 
@@ -17,9 +17,12 @@ Example
 
 from __future__ import annotations
 
-# Trigger Detectron2 registrations on package import.
-from fiberrcnn.modeling.roi_heads import FiberROIHeads  # noqa: F401
-from fiberrcnn.modeling.backbones import fiber_backbones  # noqa: F401
+# --- trigger Detectron2 registrations (optional: requires detectron2) ---
+try:
+    from fiberrcnn.modeling.roi_heads import FiberROIHeads          # noqa: F401
+    from fiberrcnn.modeling.backbones import fiber_backbones        # noqa: F401
+except ModuleNotFoundError:
+    pass  # detectron2 not installed; geometry/morphology modules still available
 
 __version__ = "2.0.0"
 __all__ = ["__version__"]

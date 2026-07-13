@@ -1,1 +1,1 @@
-"""Meta-architecture namespace for future FiberRCNN models."""
+"""Meta-architecture (model) definitions."""

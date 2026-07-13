@@ -1,6 +1,6 @@
 [build-system]
 requires = ["setuptools>=68", "wheel"]
-build-backend = "setuptools.backends.legacy:build"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "fiberrcnn"
@@ -21,7 +21,6 @@ classifiers = [
 dependencies = [
     "torch>=2.0.0",
     "torchvision>=0.15.0",
-    "detectron2>=0.6",
     "numpy>=1.24.0",
     "scipy>=1.10.0",
     "scikit-image>=0.21.0",
@@ -39,8 +38,6 @@ dependencies = [
     "tqdm>=4.65.0",
     "rich>=13.0.0",
     "omegaconf>=2.3.0",
-    "hydra-core>=1.3.0",
-    "pydantic>=2.0.0",
     "loguru>=0.7.0",
     "fvcore>=0.1.5",
     "iopath>=0.1.9",
@@ -56,14 +53,19 @@ dev = [
 ]
 
 [project.scripts]
-fiberrcnn-train = "tools.train:main"
-fiberrcnn-infer = "tools.infer:main"
-fiberrcnn-eval = "tools.evaluate:main"
+fiberrcnn-train   = "tools.train:main"
+fiberrcnn-infer   = "tools.infer:main"
+fiberrcnn-eval    = "tools.evaluate:main"
 fiberrcnn-convert = "tools.convert_dataset:main"
+fiberrcnn-viz     = "tools.visualize_dataset:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["fiberrcnn*", "tools*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
 
 [tool.black]
 line-length = 100

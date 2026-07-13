@@ -179,7 +179,15 @@ class LabelMeToCOCOFiber:
 
                 ann_id += 1
                 # Flatten keypoints to [x0, y0, v0, x1, y1, v1, ...]
-                kps_flat: list[float] = geom.keypoints.flatten().tolist()
+                # Normalise (x,y) to [0,1] by image dimensions so that
+                # keypoint regression targets are scale-invariant.
+                kps = geom.keypoints.copy()  # (40, 3)
+                kps[:, 0] /= max(img_w, 1)   # x / W
+                kps[:, 1] /= max(img_h, 1)   # y / H
+                kps_flat: list[float] = kps.flatten().tolist()
+
+                # Normalise pixel-scale metrics by image diagonal
+                img_diag = float((img_h ** 2 + img_w ** 2) ** 0.5) + 1e-6
 
                 annotation: dict[str, Any] = {
                     "id": ann_id,
@@ -190,13 +198,29 @@ class LabelMeToCOCOFiber:
                     "segmentation": geom.segmentation,
                     "iscrowd": 0,
                     "num_keypoints": self.n_keypoints,
-                    "keypoints": [round(v, 2) for v in kps_flat],
-                    "fiber_width": round(geom.fiber_width, 4),
-                    "fiber_length": round(geom.fiber_length, 4),
+                    "keypoints": [round(v, 6) for v in kps_flat],
+                    # All regression targets normalised to ~[0, 1]
+                    "fiber_width": round(geom.fiber_width / img_diag, 6),
+                    "fiber_length": round(geom.fiber_length / img_diag, 6),
                     "fiber_curvature": round(geom.fiber_curvature, 6),
-                    "fiber_orientation": round(geom.fiber_orientation, 4),
-                    "fiber_tortuosity": round(geom.fiber_tortuosity, 4),
+                    "fiber_orientation": round(geom.fiber_orientation / 180.0, 6),
+                    "fiber_tortuosity": round(geom.fiber_tortuosity - 1.0, 6),
+                    # Raw values kept for reference (used in morphology post-processing)
+                    "fiber_width_px": round(geom.fiber_width, 4),
+                    "fiber_length_px": round(geom.fiber_length, 4),
+                    "fiber_orientation_deg": round(geom.fiber_orientation, 4),
+                    "fiber_tortuosity_raw": round(geom.fiber_tortuosity, 4),
                 }
+                quality_flags = shape.get("flags", {})
+                annotation["has_bead"] = bool(
+                    shape.get("has_bead", quality_flags.get("has_bead", False))
+                )
+                annotation["is_blurry"] = bool(
+                    shape.get("is_blurry", quality_flags.get("is_blurry", False))
+                )
+                annotation["is_crossing"] = bool(
+                    shape.get("is_crossing", quality_flags.get("is_crossing", False))
+                )
                 dataset.annotations.append(annotation)
 
         logger.info(

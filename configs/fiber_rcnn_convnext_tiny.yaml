@@ -1,4 +1,5 @@
-﻿_BASE_: "base_fiber_rcnn.yaml"
+_BASE_: "base_fiber_rcnn.yaml"
+
 MODEL:
   BACKBONE:
     NAME: "build_convnext_tiny_fpn_backbone"

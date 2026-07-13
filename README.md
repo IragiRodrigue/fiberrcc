@@ -1,3 +1,9 @@
+enlever cm kv et ml et puis de Exp 119 a Exp 130 temperature est 24 humidity 51, de exp 131 a 149 temp est 23 hum 52, de exp 150 a 185 temp est 26 hum 49, de 186 a 196 temp est 27 hum 35 , de 197 a 202 temp est 24 et hum 27, de 203 a 217 temp est 26 hum 37, de 218 a 221 temp est a 28 hum 52, et de 22 a 223 temp est 29 hum 57
+
+
+
+
+
 # FiberRCNN v2
 
 **Advanced Scientific Nanofiber Analysis Framework**
@@ -100,15 +106,49 @@ python tools/train.py \
     --wandb_project my_nanofiber_project
 ```
 
+python tools/convert_dataset.py --labelme_dir data/raw --output_dir  data/coco_fiber --split --train_ratio 0.8 --val_ratio   0.1
+
+python tools/train.py --config     configs/fiber_rcnn_r50_fpn.yaml --train_json data/coco_fiber/train.json --val_json   data/coco_fiber/val.json --image_root data/raw --output_dir output/run01 --opts SOLVER.IMS_PER_BATCH 2
+
+python tools/train.py `
+    --config     configs/fiber_rcnn_r50_fpn.yaml `
+    --train_json data/coco_fiber/train.json `
+    --val_json   data/coco_fiber/val.json `
+    --image_root data/raw `
+    --output_dir output/run01 `
+    --opts SOLVER.IMS_PER_BATCH 2 `
+           SOLVER.MAX_ITER 5000 `
+           SOLVER.WARMUP_ITERS 200 `
+           SOLVER.BASE_LR 0.001 `
+           SOLVER.STEPS "(3000,4000)" `
+           TEST.EVAL_PERIOD 500
+
+python tools/train.py `
+    --config     configs/fiber_rcnn_r50_fpn.yaml `
+    --train_json data/coco_fiber/train.json `
+    --val_json   data/coco_fiber/val.json `
+    --image_root data/raw `
+    --output_dir output/run02 `
+    --opts SOLVER.IMS_PER_BATCH 2 `
+           SOLVER.MAX_ITER 5000 `
+           SOLVER.WARMUP_ITERS 500 `
+           SOLVER.BASE_LR 0.00005 `
+           SOLVER.WARMUP_FACTOR 0.0001 `
+           SOLVER.STEPS "(3000,4000)" `
+           SOLVER.CLIP_GRADIENTS.ENABLED True `
+           SOLVER.CLIP_GRADIENTS.CLIP_TYPE value `
+           SOLVER.CLIP_GRADIENTS.CLIP_VALUE 0.5 `
+           TEST.EVAL_PERIOD 500
+           
 Multi-GPU (4 GPUs):
 ```bash
-python -m torch.distributed.run --nproc_per_node=4 tools/train.py \
-    --config configs/fiber_rcnn_r50_fpn.yaml \
-    --train_json /data/coco_fiber/train.json \
-    --val_json   /data/coco_fiber/val.json \
-    --image_root /data/images \
-    --output_dir ./output/run01
+python -m torch.distributed.run --nproc_per_node=4 tools/train.py --config configs/fiber_rcnn_r50_fpn.yaml --train_json data/coco_fiber/train.json --val_json   data/coco_fiber/val.json --image_root data/images --output_dir output/run01
 ```
+
+python tools/train.py --config     configs/fiber_rcnn_r50_fpn.yaml --train_json data/coco_fiber/train.json --val_json   data/coco_fiber/val.json --image_root data/images --output_dir output/run01 --opts SOLVER.IMS_PER_BATCH 2
+
+
+python tools/train.py --config     configs/fiber_rcnn_r50_fpn.yaml --train_json data/coco_fiber/train.json --val_json   data/coco_fiber/val.json --image_root data/images --output_dir output/run01 --opts SOLVER.IMS_PER_BATCH 2
 
 Resume from checkpoint:
 ```bash

@@ -1,17 +1,15 @@
-"""Loss functions for FiberRCNN."""
-
 from .fiber_losses import (
     BinaryDiceLoss,
+    MaskLoss,
     CircularOrientationLoss,
     KeypointRegressionLoss,
-    MaskLoss,
     QualityLoss,
 )
 
 __all__ = [
     "BinaryDiceLoss",
+    "MaskLoss",
     "CircularOrientationLoss",
     "KeypointRegressionLoss",
-    "MaskLoss",
     "QualityLoss",
 ]

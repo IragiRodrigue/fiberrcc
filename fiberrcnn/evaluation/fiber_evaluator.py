@@ -28,8 +28,13 @@ from typing import Any
 
 import numpy as np
 import torch
-from detectron2.evaluation import COCOEvaluator
-from detectron2.structures import Instances
+
+try:
+    from detectron2.evaluation import COCOEvaluator
+    from detectron2.structures import Instances
+except ModuleNotFoundError:
+    COCOEvaluator = None  # type: ignore
+    Instances = None       # type: ignore
 
 logger = logging.getLogger(__name__)
 
