@@ -7,5 +7,10 @@
   "curvature/RMSE": 0.03140506779177709,
   "tortuosity/MAE": 0.8788854919861411,
   "tortuosity/RMSE": 0.9258713435546271,
-  "orientation/AngularError": 50.87349047170621
+  "orientation/AngularError": 50.87349047170621,
+  "keypoints/OKS": 3.0732834376852044e-14,
+  "keypoints/PCK@0.05": 0.0,
+  "keypoints/PCK@0.10": 0.0,
+  "keypoints/PCK@0.20": 0.0,
+  "segmentation/mIoU": 0.0
 }
