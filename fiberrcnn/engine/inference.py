@@ -81,6 +81,8 @@ class ImagePrediction:
     image_width: int
     fiber_instances: list[FiberInstance] = field(default_factory=list)
     image_metrics: dict[str, Any] = field(default_factory=dict)
+    masks: list[np.ndarray] = field(default_factory=list, repr=False)
+    centerlines: list[np.ndarray] = field(default_factory=list, repr=False)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -365,6 +367,8 @@ class FiberPredictor:
             image_width=W,
             fiber_instances=fiber_instances,
             image_metrics=image_metrics,
+            masks=masks_np,
+            centerlines=centerlines,
         )
 
     def predict_batch(

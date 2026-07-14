@@ -149,6 +149,14 @@ def main() -> None:
             p_inst = Instances((H, W))
             p_inst.pred_boxes = Boxes(boxes_pred)
             p_inst.scores = torch.tensor([f.confidence for f in pred_inst])
+            p_inst.pred_keypoints = torch.tensor(
+                [f.keypoints for f in pred_inst],
+                dtype=torch.float32,
+            )
+            p_inst.pred_masks = torch.tensor(
+                np.stack(pred.masks).astype(np.float32),
+                dtype=torch.float32,
+            )
 
             for attr in ("fiber_width", "fiber_length", "fiber_curvature",
                          "fiber_orientation", "fiber_tortuosity"):
@@ -165,37 +173,15 @@ def main() -> None:
         evaluator.process([p_inst], [gt], image_ids=[sample["image_id"]])
 
         if not args.no_visualise:
-            import numpy as np
-            from fiberrcnn.geometry import extract_centerline, resample_centerline
-
-            masks: list[np.ndarray] = []
-            centerlines: list[np.ndarray] = []
-            keypoints_list: list[np.ndarray] = []
-
-            for fiber in pred_inst:
-                mask = np.zeros((H, W), dtype=bool)
-                x, y, w, h = [int(v) for v in fiber.bbox]
-                x2 = min(W, max(x, x + w))
-                y2 = min(H, max(y, y + h))
-                x = max(0, x)
-                y = max(0, y)
-                if x < x2 and y < y2:
-                    mask[y:y2, x:x2] = True
-                masks.append(mask)
-
-                if fiber.keypoints:
-                    kps = np.array(fiber.keypoints, dtype=np.float32)
-                    keypoints_list.append(kps)
-                    centerlines.append(kps)
-                else:
-                    cl = extract_centerline(mask)
-                    centerlines.append(cl)
-                    keypoints_list.append(resample_centerline(cl, 40))
+            keypoints_list = [
+                np.array(fiber.keypoints, dtype=np.float32)
+                for fiber in pred_inst
+            ]
 
             save_visualisation_report(
                 image=bgr,
-                masks=masks,
-                centerlines=centerlines,
+                masks=pred.masks,
+                centerlines=pred.centerlines,
                 keypoints_list=keypoints_list,
                 widths=[fiber.fiber_width for fiber in pred_inst],
                 lengths=[fiber.fiber_length for fiber in pred_inst],
