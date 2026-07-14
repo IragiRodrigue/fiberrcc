@@ -82,20 +82,37 @@ class EarlyStoppingHook(HookBase):
         self.min_delta = min_delta
         self._best: float = -float("inf")
         self._rounds_without_improvement = 0
+        self._last_metric_iter: int | None = None
 
     def after_step(self) -> None:
         storage = get_event_storage()
         if self.metric_key not in storage.latest():
             return
-        val = storage.latest()[self.metric_key][0]
+        val, metric_iter = storage.latest()[self.metric_key]
+        if self._last_metric_iter == metric_iter:
+            return
+        self._last_metric_iter = metric_iter
+
         if val > self._best + self.min_delta:
             self._best = val
             self._rounds_without_improvement = 0
+            logger.info(
+                "EarlyStopping: %s improved to %.4f at eval iter %s",
+                self.metric_key,
+                val,
+                metric_iter,
+            )
         else:
             self._rounds_without_improvement += 1
             logger.info(
-                f"EarlyStopping: no improvement for "
-                f"{self._rounds_without_improvement}/{self.patience} rounds"
+                "EarlyStopping: %s did not improve at eval iter %s "
+                "(%.4f vs best %.4f) [%s/%s]",
+                self.metric_key,
+                metric_iter,
+                val,
+                self._best,
+                self._rounds_without_improvement,
+                self.patience,
             )
             if self._rounds_without_improvement >= self.patience:
                 logger.warning("Early stopping triggered.")

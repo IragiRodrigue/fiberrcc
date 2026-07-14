@@ -206,12 +206,16 @@ def _denormalize_keypoints(
     image_height: int,
     image_width: int,
 ) -> np.ndarray:
-    """Convert keypoints from [0, 1] image space back to pixel coordinates."""
+    """Convert keypoints from normalized image space to pixel coordinates when needed."""
     keypoints_px = np.asarray(keypoints, dtype=np.float32).copy()
     if keypoints_px.size == 0:
         return keypoints_px
-    keypoints_px[:, 0] *= max(image_width, 1)
-    keypoints_px[:, 1] *= max(image_height, 1)
+
+    # Newer inference code already stores keypoints in absolute image pixels.
+    if np.nanmax(np.abs(keypoints_px[:, :2])) <= 1.5:
+        keypoints_px[:, 0] *= max(image_width, 1)
+        keypoints_px[:, 1] *= max(image_height, 1)
+
     keypoints_px[:, 0] = np.clip(keypoints_px[:, 0], 0.0, max(image_width - 1, 0))
     keypoints_px[:, 1] = np.clip(keypoints_px[:, 1], 0.0, max(image_height - 1, 0))
     return keypoints_px

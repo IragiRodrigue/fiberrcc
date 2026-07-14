@@ -68,12 +68,13 @@ def load_coco_fiber_json(
 
         objs = []
         for ann in id_to_anns.get(img_id, []):
+            dataset_category_id = int(ann.get("category_id", 1))
             obj: dict[str, Any] = {
                 "bbox": ann["bbox"],
                 "bbox_mode": 1,  # XYWH_ABS
                 # Keep segmentation as polygon list — NOT pre-rasterised
                 "segmentation": ann["segmentation"],
-                "category_id": 0,
+                "category_id": max(dataset_category_id - 1, 0),
                 "keypoints": ann.get("keypoints", []),
                 "fiber_width": ann.get("fiber_width", 0.0),
                 "fiber_length": ann.get("fiber_length", 0.0),
@@ -120,6 +121,7 @@ def register_coco_fiber_dataset(
         image_root=str(image_root),
         evaluator_type="coco",
         thing_classes=["fiber"],
+        thing_dataset_id_to_contiguous_id={1: 0},
         keypoint_names=KEYPOINT_NAMES,
         keypoint_flip_map=KEYPOINT_FLIP_MAP,
     )

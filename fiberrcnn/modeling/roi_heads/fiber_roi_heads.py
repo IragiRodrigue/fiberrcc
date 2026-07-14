@@ -33,6 +33,23 @@ from detectron2.modeling.poolers import ROIPooler
 logger = logging.getLogger(__name__)
 
 
+def _keypoints_to_absolute_image_coords(
+    keypoints: torch.Tensor,
+    image_height: int,
+    image_width: int,
+) -> torch.Tensor:
+    """Convert predicted keypoints from normalized image space to pixels."""
+    if keypoints.numel() == 0:
+        return keypoints
+
+    keypoints = keypoints.clone()
+    keypoints[..., 0] = keypoints[..., 0] * max(image_width, 1)
+    keypoints[..., 1] = keypoints[..., 1] * max(image_height, 1)
+    keypoints[..., 0].clamp_(0.0, max(float(image_width - 1), 0.0))
+    keypoints[..., 1].clamp_(0.0, max(float(image_height - 1), 0.0))
+    return keypoints
+
+
 @ROI_HEADS_REGISTRY.register()
 class FiberROIHeads(StandardROIHeads):
     """StandardROIHeads + fiber-specific heads (mask, keypoint, regression).
@@ -263,7 +280,12 @@ class FiberROIHeads(StandardROIHeads):
                 continue
             s = slice(offset, offset + n)
             inst.pred_masks = torch.sigmoid(pred_masks[s])  # keep (N,1,H,W) for Detectron2 postprocess
-            inst.pred_keypoints          = pred_kps[s]
+            image_height, image_width = inst.image_size
+            inst.pred_keypoints = _keypoints_to_absolute_image_coords(
+                pred_kps[s],
+                image_height=image_height,
+                image_width=image_width,
+            )
             inst.pred_fiber_width        = pred_width[s]
             inst.pred_fiber_length       = pred_length[s]
             inst.pred_fiber_curvature    = pred_curv[s]
