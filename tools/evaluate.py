@@ -70,7 +70,6 @@ def main() -> None:
 
     import cv2
     from detectron2.structures import Instances, Boxes
-    from detectron2.utils.memory import retry_if_cuda_oom
 
     for sample in dataset_dicts:
         bgr = cv2.imread(sample["file_name"])
@@ -99,6 +98,9 @@ def main() -> None:
                                "fiber_orientation", "fiber_tortuosity"):
                 vals = [a.get(field_name, 0.0) for a in anns]
                 setattr(gt, f"gt_{field_name}", torch.tensor(vals, dtype=torch.float32))
+        else:
+            gt.gt_boxes = Boxes(torch.zeros((0, 4), dtype=torch.float32))
+            gt.gt_classes = torch.zeros((0,), dtype=torch.int64)
 
         # Convert pred to Instances for evaluator
         if pred_inst:
@@ -121,6 +123,8 @@ def main() -> None:
                 )
         else:
             p_inst = Instances((H, W))
+            p_inst.pred_boxes = Boxes(torch.zeros((0, 4), dtype=torch.float32))
+            p_inst.scores = torch.zeros((0,), dtype=torch.float32)
 
         evaluator.process([p_inst], [gt], image_ids=[sample["image_id"]])
 
