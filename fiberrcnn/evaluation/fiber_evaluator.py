@@ -236,7 +236,7 @@ class FiberEvaluator:
 
             # ---- Keypoints ----
             if hasattr(p_inst, "pred_keypoints") and hasattr(g_inst, "gt_keypoints"):
-                p_kps = p_inst.pred_keypoints.cpu().numpy()[:n_match]  # (N, K, 2)
+                p_kps = p_inst.pred_keypoints.cpu().numpy()[:n_match, :, :2]
                 g_kps = g_inst.gt_keypoints.tensor.cpu().numpy()[:n_match, :, :2]
 
                 gt_boxes = g_inst.gt_boxes.tensor.cpu().numpy()[:n_match]
