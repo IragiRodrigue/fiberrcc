@@ -34,16 +34,28 @@ try:
     from detectron2.config import get_cfg
     from detectron2.engine import DefaultPredictor
     from detectron2.structures import Instances
+    from yacs.config import CfgNode
 except ModuleNotFoundError:
     get_cfg = None          # type: ignore
     DefaultPredictor = None  # type: ignore
     Instances = None         # type: ignore
+    CfgNode = None           # type: ignore
 
 from fiberrcnn.geometry import extract_centerline
 from fiberrcnn.morphology import compute_image_morphology
 
 logger = logging.getLogger(__name__)
 _EPS = 1e-6
+
+
+def _add_fiber_cfg_defaults(cfg: Any) -> None:
+    """Register FiberRCNN config keys before merging project YAML files."""
+    if not hasattr(cfg.MODEL, "FIBER_HEADS"):
+        cfg.MODEL.FIBER_HEADS = CfgNode()
+    cfg.MODEL.FIBER_HEADS.ENABLE_MASK = True
+    cfg.MODEL.FIBER_HEADS.ENABLE_KEYPOINTS = True
+    cfg.MODEL.FIBER_HEADS.ENABLE_REGRESSION = True
+    cfg.MODEL.FIBER_HEADS.ENABLE_QUALITY = True
 
 
 # ---------------------------------------------------------------------------
@@ -291,6 +303,7 @@ class FiberPredictor:
         from detectron2.config import get_cfg
 
         cfg = get_cfg()
+        _add_fiber_cfg_defaults(cfg)
         cfg.merge_from_file(str(cfg_path))
         cfg.MODEL.WEIGHTS = str(weights_path)
         cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = score_thresh
