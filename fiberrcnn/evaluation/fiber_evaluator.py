@@ -39,6 +39,18 @@ except ModuleNotFoundError:
 logger = logging.getLogger(__name__)
 
 
+def _instances_len(instances: Instances) -> int:
+    """Return the number of elements in a Detectron2 ``Instances`` safely."""
+    try:
+        return len(instances)
+    except NotImplementedError:
+        fields = instances.get_fields()
+        if not fields:
+            return 0
+        first_field = next(iter(fields.values()))
+        return len(first_field)
+
+
 # ---------------------------------------------------------------------------
 # Regression metrics helpers
 # ---------------------------------------------------------------------------
@@ -201,10 +213,12 @@ class FiberEvaluator:
             p_inst: Instances = pred_entry["instances"]
             g_inst: Instances = gt_entry["instances"]
 
-            if len(p_inst) == 0 or len(g_inst) == 0:
+            n_pred = _instances_len(p_inst)
+            n_gt = _instances_len(g_inst)
+            if n_pred == 0 or n_gt == 0:
                 continue
 
-            n_match = min(len(p_inst), len(g_inst))
+            n_match = min(n_pred, n_gt)
 
             # ---- Regression ----
             for attr_pred, attr_gt, p_list, g_list in [
