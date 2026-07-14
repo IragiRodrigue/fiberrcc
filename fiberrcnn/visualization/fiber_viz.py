@@ -109,16 +109,22 @@ def draw_centerlines(
     vis = image.copy()
     for i, cl in enumerate(centerlines):
         color = _instance_color(i)[::-1]  # BGR
-        pts = cl.astype(np.int32)
+        pts = np.asarray(cl, dtype=np.int32)
+        if pts.ndim != 2 or pts.shape[0] == 0:
+            continue
+        pts = pts[:, :2]
 
         for j in range(len(pts) - 1):
             cv2.line(vis, tuple(pts[j]), tuple(pts[j + 1]), color, line_thickness)
 
         if keypoints is not None:
-            kps = keypoints[i].astype(np.int32)
+            kps = np.asarray(keypoints[i], dtype=np.int32)
+            if kps.ndim != 2 or kps.shape[0] == 0:
+                continue
+            kps = kps[:, :2]
             for kp in kps:
-                cv2.circle(vis, tuple(kp[:2]), kp_radius, (255, 255, 255), -1)
-                cv2.circle(vis, tuple(kp[:2]), kp_radius + 1, color, 1)
+                cv2.circle(vis, tuple(kp), kp_radius, (255, 255, 255), -1)
+                cv2.circle(vis, tuple(kp), kp_radius + 1, color, 1)
 
     return vis
 
