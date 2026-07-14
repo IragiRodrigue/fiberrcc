@@ -31,10 +31,11 @@ import torch
 
 try:
     from detectron2.evaluation import COCOEvaluator
-    from detectron2.structures import Instances
+    from detectron2.structures import Instances, polygons_to_bitmask
 except ModuleNotFoundError:
     COCOEvaluator = None  # type: ignore
     Instances = None       # type: ignore
+    polygons_to_bitmask = None  # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -262,7 +263,8 @@ class FiberEvaluator:
                     image_height, image_width = g_inst.image_size
                     g_masks = np.stack(
                         [
-                            g_inst.gt_masks[i].polygons_to_mask(
+                            polygons_to_bitmask(
+                                g_inst.gt_masks.polygons[i],
                                 image_height,
                                 image_width,
                             )
