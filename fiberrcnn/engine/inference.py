@@ -25,11 +25,7 @@ import json
 import logging
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-<<<<<<< HEAD
-from typing import Any, Optional
-=======
 from typing import Any
->>>>>>> c919a820bfc4f7548f8b71c303bfbbf8fa033522
 
 import cv2
 import numpy as np
@@ -43,21 +39,11 @@ except ModuleNotFoundError:
     DefaultPredictor = None  # type: ignore
     Instances = None         # type: ignore
 
-<<<<<<< HEAD
-from fiberrcnn.geometry import (
-    extract_centerline,
-    resample_centerline,
-)
-from fiberrcnn.morphology import compute_image_morphology, ImageMorphologyResult
-
-logger = logging.getLogger(__name__)
-=======
 from fiberrcnn.geometry import extract_centerline
 from fiberrcnn.morphology import compute_image_morphology
 
 logger = logging.getLogger(__name__)
 _EPS = 1e-6
->>>>>>> c919a820bfc4f7548f8b71c303bfbbf8fa033522
 
 
 # ---------------------------------------------------------------------------
@@ -137,23 +123,14 @@ def _instances_to_fiber_list(
     if n == 0:
         return fiber_instances, masks_np, centerlines
 
-<<<<<<< HEAD
-=======
     image_height, image_width = getattr(instances, "image_size", (0, 0))
     image_diag = float((image_height ** 2 + image_width ** 2) ** 0.5) + _EPS
->>>>>>> c919a820bfc4f7548f8b71c303bfbbf8fa033522
     boxes = instances.pred_boxes.tensor.cpu().numpy()
     scores = instances.scores.cpu().numpy() if hasattr(instances, "scores") else np.ones(n)
 
     for i in range(n):
         # Mask
         if hasattr(instances, "pred_masks"):
-<<<<<<< HEAD
-            mask = (instances.pred_masks[i].cpu().numpy() > mask_threshold)
-        else:
-            mask = np.zeros(
-                (int(boxes[i, 3] - boxes[i, 1]), int(boxes[i, 2] - boxes[i, 0])),
-=======
             mask = _instance_mask_in_image(
                 instances=instances,
                 index=i,
@@ -164,7 +141,6 @@ def _instances_to_fiber_list(
         else:
             mask = np.zeros(
                 (image_height, image_width),
->>>>>>> c919a820bfc4f7548f8b71c303bfbbf8fa033522
                 dtype=bool,
             )
         masks_np.append(mask)
@@ -177,11 +153,7 @@ def _instances_to_fiber_list(
         kps_flat: list[list[float]] = []
         if hasattr(instances, "pred_keypoints"):
             kps = instances.pred_keypoints[i].cpu().numpy()  # (K, 2)
-<<<<<<< HEAD
-            kps_flat = kps.tolist()
-=======
             kps_flat = _denormalize_keypoints(kps, image_height, image_width).tolist()
->>>>>>> c919a820bfc4f7548f8b71c303bfbbf8fa033522
 
         # Quality flags
         has_bead = False
@@ -209,19 +181,11 @@ def _instances_to_fiber_list(
             instance_id=i,
             bbox=bbox_xywh,
             confidence=float(scores[i]),
-<<<<<<< HEAD
-            fiber_width=_attr("pred_fiber_width"),
-            fiber_length=_attr("pred_fiber_length"),
-            fiber_curvature=_attr("pred_fiber_curvature"),
-            fiber_orientation=_attr("pred_fiber_orientation"),
-            fiber_tortuosity=_attr("pred_fiber_tortuosity"),
-=======
             fiber_width=_attr("pred_fiber_width") * image_diag,
             fiber_length=_attr("pred_fiber_length") * image_diag,
             fiber_curvature=_attr("pred_fiber_curvature"),
             fiber_orientation=_wrap_orientation_deg(_attr("pred_fiber_orientation") * 180.0),
             fiber_tortuosity=max(1.0, _attr("pred_fiber_tortuosity") + 1.0),
->>>>>>> c919a820bfc4f7548f8b71c303bfbbf8fa033522
             has_bead=has_bead,
             is_blurry=is_blurry,
             is_crossing=is_crossing,
@@ -232,8 +196,6 @@ def _instances_to_fiber_list(
     return fiber_instances, masks_np, centerlines
 
 
-<<<<<<< HEAD
-=======
 def _wrap_orientation_deg(value: float) -> float:
     """Wrap an orientation angle into [0, 180)."""
     return float(value % 180.0)
@@ -294,7 +256,6 @@ def _instance_mask_in_image(
     return pasted[0].cpu().numpy().astype(bool)
 
 
->>>>>>> c919a820bfc4f7548f8b71c303bfbbf8fa033522
 # ---------------------------------------------------------------------------
 # FiberPredictor
 # ---------------------------------------------------------------------------
