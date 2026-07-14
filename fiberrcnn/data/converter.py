@@ -88,6 +88,12 @@ class LabelMeToCOCOFiber:
         self.n_keypoints = n_keypoints
         self.fiber_label = fiber_label
 
+    def _is_fiber_label(self, label: str) -> bool:
+        """Return True for ``fiber`` and indexed variants like ``fiber12``."""
+        normalized = label.strip().lower()
+        base = self.fiber_label.strip().lower()
+        return normalized == base or normalized.startswith(base)
+
     # ------------------------------------------------------------------
 
     def convert(
@@ -161,7 +167,7 @@ class LabelMeToCOCOFiber:
 
             shapes = lm.get("shapes", [])
             for shape in shapes:
-                if shape.get("label", "") != self.fiber_label:
+                if not self._is_fiber_label(shape.get("label", "")):
                     continue
                 if shape.get("shape_type", "") != "polygon":
                     continue
