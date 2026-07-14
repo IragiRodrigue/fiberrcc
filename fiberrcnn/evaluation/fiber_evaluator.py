@@ -256,7 +256,13 @@ class FiberEvaluator:
             # ---- Mask IoU ----
             if hasattr(p_inst, "pred_masks") and hasattr(g_inst, "gt_masks"):
                 p_masks = (p_inst.pred_masks.cpu().numpy() > 0.5)[:n_match]
-                g_masks = g_inst.gt_masks.tensor.cpu().numpy()[:n_match]
+                if hasattr(g_inst.gt_masks, "tensor"):
+                    g_masks = g_inst.gt_masks.tensor.cpu().numpy()[:n_match]
+                else:
+                    g_masks = g_inst.gt_masks.crop_and_resize(
+                        g_inst.gt_boxes.tensor[:n_match],
+                        mask_size=p_masks.shape[-1],
+                    ).cpu().numpy()
                 for p_m, g_m in zip(p_masks, g_masks):
                     iou_scores.append(mask_iou(p_m, g_m))
 
