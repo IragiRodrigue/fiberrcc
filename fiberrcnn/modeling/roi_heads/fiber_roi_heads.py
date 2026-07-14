@@ -248,6 +248,14 @@ class FiberROIHeads(StandardROIHeads):
         pred_tort,    _ = self.fiber_tortuosity_head(feats)
         pred_quality, _ = self.fiber_quality_head(feats)
 
+        # Detectron2 / COCO evaluators expect keypoints as (x, y, score).
+        pred_kps_scores = torch.ones(
+            (*pred_kps.shape[:2], 1),
+            dtype=pred_kps.dtype,
+            device=pred_kps.device,
+        )
+        pred_kps = torch.cat([pred_kps, pred_kps_scores], dim=2)
+
         offset = 0
         for inst in pred_instances:
             n = len(inst)

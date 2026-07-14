@@ -37,6 +37,7 @@ from detectron2.utils.events import EventStorage, get_event_storage
 from torch.utils.tensorboard import SummaryWriter
 
 logger = logging.getLogger(__name__)
+NUM_FIBER_KEYPOINTS = 40
 
 
 # ---------------------------------------------------------------------------
@@ -331,6 +332,7 @@ def build_fiber_cfg(
     cfg.DATASETS.TRAIN = (dataset_train,)
     cfg.DATASETS.TEST = (dataset_val,)
     cfg.OUTPUT_DIR = output_dir
+    cfg.TEST.KEYPOINT_OKS_SIGMAS = tuple([0.05] * NUM_FIBER_KEYPOINTS)
     Path(output_dir).mkdir(parents=True, exist_ok=True)
 
     if overrides:
