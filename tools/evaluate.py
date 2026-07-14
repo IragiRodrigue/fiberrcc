@@ -23,6 +23,13 @@ from pathlib import Path
 from loguru import logger
 
 
+def _gt_value(annotation: dict, normalized_key: str, raw_key: str, default: float = 0.0) -> float:
+    """Prefer raw GT fields when the dataset provides both raw and normalized values."""
+    if raw_key in annotation and annotation[raw_key] is not None:
+        return float(annotation[raw_key])
+    return float(annotation.get(normalized_key, default))
+
+
 def _parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(
         description="Evaluate FiberRCNN",
@@ -94,13 +101,34 @@ def main() -> None:
             gt.gt_boxes = Boxes(torch.tensor(boxes, dtype=torch.float32))
             gt.gt_classes = torch.zeros(len(anns), dtype=torch.int64)
 
-            for field_name in ("fiber_width", "fiber_length", "fiber_curvature",
-                               "fiber_orientation", "fiber_tortuosity"):
-                vals = [a.get(field_name, 0.0) for a in anns]
-                setattr(gt, f"gt_{field_name}", torch.tensor(vals, dtype=torch.float32))
+            gt.gt_fiber_width = torch.tensor(
+                [_gt_value(a, "fiber_width", "fiber_width_px") for a in anns],
+                dtype=torch.float32,
+            )
+            gt.gt_fiber_length = torch.tensor(
+                [_gt_value(a, "fiber_length", "fiber_length_px") for a in anns],
+                dtype=torch.float32,
+            )
+            gt.gt_fiber_curvature = torch.tensor(
+                [float(a.get("fiber_curvature", 0.0)) for a in anns],
+                dtype=torch.float32,
+            )
+            gt.gt_fiber_orientation = torch.tensor(
+                [_gt_value(a, "fiber_orientation", "fiber_orientation_deg") for a in anns],
+                dtype=torch.float32,
+            )
+            gt.gt_fiber_tortuosity = torch.tensor(
+                [_gt_value(a, "fiber_tortuosity", "fiber_tortuosity_raw", default=1.0) for a in anns],
+                dtype=torch.float32,
+            )
         else:
             gt.gt_boxes = Boxes(torch.zeros((0, 4), dtype=torch.float32))
             gt.gt_classes = torch.zeros((0,), dtype=torch.int64)
+            gt.gt_fiber_width = torch.zeros((0,), dtype=torch.float32)
+            gt.gt_fiber_length = torch.zeros((0,), dtype=torch.float32)
+            gt.gt_fiber_curvature = torch.zeros((0,), dtype=torch.float32)
+            gt.gt_fiber_orientation = torch.zeros((0,), dtype=torch.float32)
+            gt.gt_fiber_tortuosity = torch.zeros((0,), dtype=torch.float32)
 
         # Convert pred to Instances for evaluator
         if pred_inst:
