@@ -61,6 +61,10 @@ class FiberROIHeads(StandardROIHeads):
 
     def __init__(self, cfg: CfgNode, input_shape: dict[str, ShapeSpec]) -> None:
         super().__init__(cfg, input_shape)
+        self.enable_fiber_mask = bool(cfg.MODEL.FIBER_HEADS.ENABLE_MASK)
+        self.enable_fiber_keypoints = bool(cfg.MODEL.FIBER_HEADS.ENABLE_KEYPOINTS)
+        self.enable_fiber_regression = bool(cfg.MODEL.FIBER_HEADS.ENABLE_REGRESSION)
+        self.enable_fiber_quality = bool(cfg.MODEL.FIBER_HEADS.ENABLE_QUALITY)
 
         in_features = cfg.MODEL.ROI_HEADS.IN_FEATURES
         pooler_resolution = 14
@@ -185,7 +189,7 @@ class FiberROIHeads(StandardROIHeads):
             return losses
 
         # ── Mask ──────────────────────────────────────────────────────
-        if all(hasattr(p, "gt_masks") for p in fg_only):
+        if self.enable_fiber_mask and all(hasattr(p, "gt_masks") for p in fg_only):
             gt_masks_list = []
             for p in fg_only:
                 crop = p.gt_masks.crop_and_resize(
@@ -199,7 +203,7 @@ class FiberROIHeads(StandardROIHeads):
                     losses["loss_fiber_mask"] = loss
 
         # ── Keypoints (already normalised [0,1] by converter) ────────
-        if all(hasattr(p, "gt_keypoints") for p in fg_only):
+        if self.enable_fiber_keypoints and all(hasattr(p, "gt_keypoints") for p in fg_only):
             gt_kps = torch.cat([p.gt_keypoints.tensor for p in fg_only])
             if gt_kps.shape[0] > 0:
                 _, loss = self.fiber_keypoint_head(
@@ -216,7 +220,7 @@ class FiberROIHeads(StandardROIHeads):
             ("gt_fiber_orientation",self.fiber_orientation_head,"loss_orientation"),
             ("gt_fiber_tortuosity", self.fiber_tortuosity_head, "loss_tortuosity"),
         ]:
-            if all(hasattr(p, attr) for p in fg_only):
+            if self.enable_fiber_regression and all(hasattr(p, attr) for p in fg_only):
                 gt_vals = torch.cat([getattr(p, attr) for p in fg_only])
                 if gt_vals.shape[0] > 0:
                     _, loss = head(feats, gt_vals)
@@ -224,7 +228,7 @@ class FiberROIHeads(StandardROIHeads):
                         losses[key] = loss
 
         quality_attrs = ("gt_has_bead", "gt_is_blurry", "gt_is_crossing")
-        if all(all(hasattr(p, attr) for attr in quality_attrs) for p in fg_only):
+        if self.enable_fiber_quality and all(all(hasattr(p, attr) for attr in quality_attrs) for p in fg_only):
             gt_quality = torch.stack(
                 [
                     torch.cat([getattr(p, attr) for p in fg_only])
@@ -257,27 +261,31 @@ class FiberROIHeads(StandardROIHeads):
         if feats.shape[0] == 0:
             return pred_instances
 
-        pred_masks,   _ = self.fiber_mask_head(feats)
-        pred_kps,     _ = self.fiber_keypoint_head(feats)
-        pred_width,   _ = self.fiber_width_head(feats)
-        pred_length,  _ = self.fiber_length_head(feats)
-        pred_curv,    _ = self.fiber_curvature_head(feats)
-        pred_orient,  _ = self.fiber_orientation_head(feats)
-        pred_tort,    _ = self.fiber_tortuosity_head(feats)
-        pred_quality, _ = self.fiber_quality_head(feats)
+        pred_masks = pred_kps = pred_width = pred_length = None
+        pred_curv = pred_orient = pred_tort = pred_quality = None
 
-        # Detectron2 / COCO evaluators expect keypoints as (x, y, score).
-        pred_kps_scores = torch.ones(
-            (*pred_kps.shape[:2], 1),
-            dtype=pred_kps.dtype,
-            device=pred_kps.device,
-        )
-        pred_kps = torch.cat([pred_kps, pred_kps_scores], dim=2)
+        if self.enable_fiber_mask:
+            pred_masks, _ = self.fiber_mask_head(feats)
+            mask_rcnn_inference(pred_masks, pred_instances)
 
-        # Delegate mask tensor formatting to Detectron2's reference helper.
-        # It attaches `pred_masks` using the exact shape/convention expected by
-        # detector post-processing and COCO export.
-        mask_rcnn_inference(pred_masks, pred_instances)
+        if self.enable_fiber_keypoints:
+            pred_kps, _ = self.fiber_keypoint_head(feats)
+            pred_kps_scores = torch.ones(
+                (*pred_kps.shape[:2], 1),
+                dtype=pred_kps.dtype,
+                device=pred_kps.device,
+            )
+            pred_kps = torch.cat([pred_kps, pred_kps_scores], dim=2)
+
+        if self.enable_fiber_regression:
+            pred_width, _ = self.fiber_width_head(feats)
+            pred_length, _ = self.fiber_length_head(feats)
+            pred_curv, _ = self.fiber_curvature_head(feats)
+            pred_orient, _ = self.fiber_orientation_head(feats)
+            pred_tort, _ = self.fiber_tortuosity_head(feats)
+
+        if self.enable_fiber_quality:
+            pred_quality, _ = self.fiber_quality_head(feats)
 
         offset = 0
         for inst in pred_instances:
@@ -286,20 +294,23 @@ class FiberROIHeads(StandardROIHeads):
                 continue
             s = slice(offset, offset + n)
             image_height, image_width = inst.image_size
-            inst.pred_keypoints = _keypoints_to_absolute_image_coords(
-                pred_kps[s],
-                image_height=image_height,
-                image_width=image_width,
-            )
-            inst.pred_fiber_width        = pred_width[s]
-            inst.pred_fiber_length       = pred_length[s]
-            inst.pred_fiber_curvature    = pred_curv[s]
-            inst.pred_fiber_orientation  = pred_orient[s]
-            inst.pred_fiber_tortuosity   = pred_tort[s]
-            q = torch.sigmoid(pred_quality[s])
-            inst.pred_has_bead    = q[:, 0]
-            inst.pred_is_blurry   = q[:, 1]
-            inst.pred_is_crossing = q[:, 2]
+            if self.enable_fiber_keypoints and pred_kps is not None:
+                inst.pred_keypoints = _keypoints_to_absolute_image_coords(
+                    pred_kps[s],
+                    image_height=image_height,
+                    image_width=image_width,
+                )
+            if self.enable_fiber_regression and pred_width is not None:
+                inst.pred_fiber_width        = pred_width[s]
+                inst.pred_fiber_length       = pred_length[s]
+                inst.pred_fiber_curvature    = pred_curv[s]
+                inst.pred_fiber_orientation  = pred_orient[s]
+                inst.pred_fiber_tortuosity   = pred_tort[s]
+            if self.enable_fiber_quality and pred_quality is not None:
+                q = torch.sigmoid(pred_quality[s])
+                inst.pred_has_bead    = q[:, 0]
+                inst.pred_is_blurry   = q[:, 1]
+                inst.pred_is_crossing = q[:, 2]
             offset += n
 
         return pred_instances

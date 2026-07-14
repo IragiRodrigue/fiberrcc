@@ -345,6 +345,11 @@ def build_fiber_cfg(
     cfg : CfgNode
     """
     cfg = get_cfg()
+    cfg.MODEL.FIBER_HEADS = CfgNode()
+    cfg.MODEL.FIBER_HEADS.ENABLE_MASK = True
+    cfg.MODEL.FIBER_HEADS.ENABLE_KEYPOINTS = True
+    cfg.MODEL.FIBER_HEADS.ENABLE_REGRESSION = True
+    cfg.MODEL.FIBER_HEADS.ENABLE_QUALITY = True
     cfg.merge_from_file(base_config_file)
     cfg.DATASETS.TRAIN = (dataset_train,)
     cfg.DATASETS.TEST = (dataset_val,)
