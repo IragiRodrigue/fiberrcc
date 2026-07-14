@@ -6,3 +6,7 @@
 2026-07-14 15:10:13.014 | INFO     | __main__:main:103 - Max iter   : 5000
 2026-07-14 15:34:08.606 | INFO     | __main__:main:118 - Training stopped early.
 2026-07-14 15:34:08.606 | SUCCESS  | __main__:main:120 - Training complete → output\run10
+2026-07-14 15:52:57.543 | INFO     | __main__:main:101 - Output dir : output\run10
+2026-07-14 15:52:57.543 | INFO     | __main__:main:102 - Batch size : 2
+2026-07-14 15:52:57.544 | INFO     | __main__:main:103 - Max iter   : 5000
+2026-07-14 19:47:22.531 | SUCCESS  | __main__:main:120 - Training complete → output\run10
