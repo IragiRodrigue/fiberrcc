@@ -42,6 +42,11 @@ def _parse_args() -> argparse.Namespace:
     p.add_argument("--output_dir", type=Path, required=True)
     p.add_argument("--threshold", type=float, default=0.5)
     p.add_argument("--device", default="cuda", choices=["cuda", "cpu"])
+    p.add_argument(
+        "--no_visualise",
+        action="store_true",
+        help="Skip saving per-image visualisation artefacts.",
+    )
     return p.parse_args()
 
 
@@ -56,6 +61,7 @@ def main() -> None:
     from fiberrcnn.data import register_coco_fiber_dataset, load_coco_fiber_json
     from fiberrcnn.engine.inference import FiberPredictor
     from fiberrcnn.evaluation import FiberEvaluator
+    from fiberrcnn.visualization import save_visualisation_report
     from detectron2.data import DatasetCatalog, MetadataCatalog
     import torch
     import numpy as np
@@ -77,6 +83,8 @@ def main() -> None:
 
     import cv2
     from detectron2.structures import Instances, Boxes
+
+    vis_root = args.output_dir / "visualizations"
 
     for sample in dataset_dicts:
         bgr = cv2.imread(sample["file_name"])
@@ -155,6 +163,48 @@ def main() -> None:
             p_inst.scores = torch.zeros((0,), dtype=torch.float32)
 
         evaluator.process([p_inst], [gt], image_ids=[sample["image_id"]])
+
+        if not args.no_visualise:
+            import numpy as np
+            from fiberrcnn.geometry import extract_centerline, resample_centerline
+
+            masks: list[np.ndarray] = []
+            centerlines: list[np.ndarray] = []
+            keypoints_list: list[np.ndarray] = []
+
+            for fiber in pred_inst:
+                mask = np.zeros((H, W), dtype=bool)
+                x, y, w, h = [int(v) for v in fiber.bbox]
+                x2 = min(W, max(x, x + w))
+                y2 = min(H, max(y, y + h))
+                x = max(0, x)
+                y = max(0, y)
+                if x < x2 and y < y2:
+                    mask[y:y2, x:x2] = True
+                masks.append(mask)
+
+                if fiber.keypoints:
+                    kps = np.array(fiber.keypoints, dtype=np.float32)
+                    keypoints_list.append(kps)
+                    centerlines.append(kps)
+                else:
+                    cl = extract_centerline(mask)
+                    centerlines.append(cl)
+                    keypoints_list.append(resample_centerline(cl, 40))
+
+            save_visualisation_report(
+                image=bgr,
+                masks=masks,
+                centerlines=centerlines,
+                keypoints_list=keypoints_list,
+                widths=[fiber.fiber_width for fiber in pred_inst],
+                lengths=[fiber.fiber_length for fiber in pred_inst],
+                orientations=[fiber.fiber_orientation for fiber in pred_inst],
+                curvatures=[fiber.fiber_curvature for fiber in pred_inst],
+                tortuosities=[fiber.fiber_tortuosity for fiber in pred_inst],
+                output_dir=vis_root / Path(sample["file_name"]).stem,
+                image_name=Path(sample["file_name"]).stem,
+            )
 
     results = evaluator.evaluate()
 
