@@ -14,6 +14,7 @@ import torch
 import torch.nn as nn
 from detectron2.config import CfgNode
 from detectron2.layers import ShapeSpec
+from detectron2.modeling.roi_heads.mask_head import mask_rcnn_inference
 from detectron2.modeling.roi_heads import ROI_HEADS_REGISTRY, StandardROIHeads
 from detectron2.structures import ImageList, Instances
 from torch import Tensor
@@ -273,13 +274,17 @@ class FiberROIHeads(StandardROIHeads):
         )
         pred_kps = torch.cat([pred_kps, pred_kps_scores], dim=2)
 
+        # Delegate mask tensor formatting to Detectron2's reference helper.
+        # It attaches `pred_masks` using the exact shape/convention expected by
+        # detector post-processing and COCO export.
+        mask_rcnn_inference(pred_masks, pred_instances)
+
         offset = 0
         for inst in pred_instances:
             n = len(inst)
             if n == 0:
                 continue
             s = slice(offset, offset + n)
-            inst.pred_masks = torch.sigmoid(pred_masks[s])  # keep (N,1,H,W) for Detectron2 postprocess
             image_height, image_width = inst.image_size
             inst.pred_keypoints = _keypoints_to_absolute_image_coords(
                 pred_kps[s],
