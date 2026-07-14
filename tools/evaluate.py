@@ -82,7 +82,7 @@ def main() -> None:
     logger.info(f"Evaluating on {len(dataset_dicts)} images …")
 
     import cv2
-    from detectron2.structures import Instances, Boxes
+    from detectron2.structures import Instances, Boxes, Keypoints, PolygonMasks
 
     vis_root = args.output_dir / "visualizations"
 
@@ -108,6 +108,19 @@ def main() -> None:
             ]
             gt.gt_boxes = Boxes(torch.tensor(boxes, dtype=torch.float32))
             gt.gt_classes = torch.zeros(len(anns), dtype=torch.int64)
+            gt.gt_masks = PolygonMasks(
+                [a.get("segmentation", [[]]) for a in anns]
+            )
+            gt.gt_keypoints = Keypoints(
+                np.stack(
+                    [
+                        np.array(a.get("keypoints", []), dtype=np.float32).reshape(-1, 3)
+                        if a.get("keypoints")
+                        else np.zeros((40, 3), dtype=np.float32)
+                        for a in anns
+                    ]
+                )
+            )
 
             gt.gt_fiber_width = torch.tensor(
                 [_gt_value(a, "fiber_width", "fiber_width_px") for a in anns],
@@ -132,6 +145,8 @@ def main() -> None:
         else:
             gt.gt_boxes = Boxes(torch.zeros((0, 4), dtype=torch.float32))
             gt.gt_classes = torch.zeros((0,), dtype=torch.int64)
+            gt.gt_masks = PolygonMasks([])
+            gt.gt_keypoints = Keypoints(torch.zeros((0, 40, 3), dtype=torch.float32))
             gt.gt_fiber_width = torch.zeros((0,), dtype=torch.float32)
             gt.gt_fiber_length = torch.zeros((0,), dtype=torch.float32)
             gt.gt_fiber_curvature = torch.zeros((0,), dtype=torch.float32)
