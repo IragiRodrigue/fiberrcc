@@ -34,20 +34,40 @@ from detectron2.modeling.poolers import ROIPooler
 logger = logging.getLogger(__name__)
 
 
-def _keypoints_to_absolute_image_coords(
+def _keypoints_to_absolute_box_coords(
     keypoints: torch.Tensor,
-    image_height: int,
-    image_width: int,
+    boxes_xyxy: torch.Tensor,
 ) -> torch.Tensor:
-    """Convert predicted keypoints from normalized image space to pixels."""
+    """Convert ROI-local normalized keypoints to absolute image pixels."""
     if keypoints.numel() == 0:
         return keypoints
 
     keypoints = keypoints.clone()
-    keypoints[..., 0] = keypoints[..., 0] * max(image_width, 1)
-    keypoints[..., 1] = keypoints[..., 1] * max(image_height, 1)
-    keypoints[..., 0].clamp_(0.0, max(float(image_width - 1), 0.0))
-    keypoints[..., 1].clamp_(0.0, max(float(image_height - 1), 0.0))
+    widths = (boxes_xyxy[:, 2] - boxes_xyxy[:, 0]).clamp(min=1.0)
+    heights = (boxes_xyxy[:, 3] - boxes_xyxy[:, 1]).clamp(min=1.0)
+    keypoints[..., 0] = boxes_xyxy[:, None, 0] + keypoints[..., 0] * widths[:, None]
+    keypoints[..., 1] = boxes_xyxy[:, None, 1] + keypoints[..., 1] * heights[:, None]
+    return keypoints
+
+
+def _gt_keypoints_to_box_normalized(
+    keypoints: torch.Tensor,
+    boxes_xyxy: torch.Tensor,
+    image_height: int,
+    image_width: int,
+) -> torch.Tensor:
+    """Convert image-normalized GT keypoints into ROI-local normalized coords."""
+    if keypoints.numel() == 0:
+        return keypoints
+
+    keypoints = keypoints.clone()
+    abs_x = keypoints[..., 0] * max(image_width, 1)
+    abs_y = keypoints[..., 1] * max(image_height, 1)
+    widths = (boxes_xyxy[:, 2] - boxes_xyxy[:, 0]).clamp(min=1.0)
+    heights = (boxes_xyxy[:, 3] - boxes_xyxy[:, 1]).clamp(min=1.0)
+    keypoints[..., 0] = (abs_x - boxes_xyxy[:, None, 0]) / widths[:, None]
+    keypoints[..., 1] = (abs_y - boxes_xyxy[:, None, 1]) / heights[:, None]
+    keypoints[..., :2].clamp_(0.0, 1.0)
     return keypoints
 
 
@@ -204,7 +224,17 @@ class FiberROIHeads(StandardROIHeads):
 
         # ── Keypoints (already normalised [0,1] by converter) ────────
         if self.enable_fiber_keypoints and all(hasattr(p, "gt_keypoints") for p in fg_only):
-            gt_kps = torch.cat([p.gt_keypoints.tensor for p in fg_only])
+            gt_kps = torch.cat(
+                [
+                    _gt_keypoints_to_box_normalized(
+                        p.gt_keypoints.tensor,
+                        p.proposal_boxes.tensor,
+                        image_height=p.image_size[0],
+                        image_width=p.image_size[1],
+                    )
+                    for p in fg_only
+                ]
+            )
             if gt_kps.shape[0] > 0:
                 _, loss = self.fiber_keypoint_head(
                     feats, gt_kps[:, :, :2], weights=gt_kps[:, :, 2]
@@ -293,12 +323,10 @@ class FiberROIHeads(StandardROIHeads):
             if n == 0:
                 continue
             s = slice(offset, offset + n)
-            image_height, image_width = inst.image_size
             if self.enable_fiber_keypoints and pred_kps is not None:
-                inst.pred_keypoints = _keypoints_to_absolute_image_coords(
+                inst.pred_keypoints = _keypoints_to_absolute_box_coords(
                     pred_kps[s],
-                    image_height=image_height,
-                    image_width=image_width,
+                    inst.pred_boxes.tensor,
                 )
             if self.enable_fiber_regression and pred_width is not None:
                 inst.pred_fiber_width        = pred_width[s]
