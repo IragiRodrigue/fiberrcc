@@ -1,0 +1,18 @@
+{
+  "width/MAE": 59.3943192271863,
+  "width/RMSE": 65.1975422483776,
+  "length/MAE": 206.53770226947333,
+  "length/RMSE": 272.64123764492564,
+  "curvature/MAE": 0.03029105572377221,
+  "curvature/RMSE": 0.035632200043457296,
+  "tortuosity/MAE": 0.8432967501171564,
+  "tortuosity/RMSE": 0.859703108362963,
+  "orientation/AngularError": 45.62274717072309,
+  "keypoints/OKS": 1.200519966461393e-10,
+  "keypoints/PCK@0.05": 0.0,
+  "keypoints/PCK@0.10": 0.0,
+  "keypoints/PCK@0.20": 0.0,
+  "segmentation/mIoU": 0.0,
+  "matching/MeanBBoxIoU": 0.3737644500146478,
+  "matching/MatchedPairs": 59.0
+}
