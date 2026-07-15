@@ -1,0 +1,4 @@
+2026-07-15 17:59:51.804 | INFO     | __main__:main:101 - Output dir : output\run14_full_heads_kpsigmoid
+2026-07-15 17:59:51.804 | INFO     | __main__:main:102 - Batch size : 2
+2026-07-15 17:59:51.804 | INFO     | __main__:main:103 - Max iter   : 5000
+2026-07-15 22:10:59.008 | SUCCESS  | __main__:main:120 - Training complete → output\run14_full_heads_kpsigmoid
