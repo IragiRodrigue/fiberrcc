@@ -52,6 +52,61 @@ def _instances_len(instances: Instances) -> int:
         return len(first_field)
 
 
+def _bbox_iou_matrix(pred_boxes: np.ndarray, gt_boxes: np.ndarray) -> np.ndarray:
+    """Compute pairwise IoU matrix between XYXY boxes."""
+    if len(pred_boxes) == 0 or len(gt_boxes) == 0:
+        return np.zeros((len(pred_boxes), len(gt_boxes)), dtype=np.float32)
+
+    ious = np.zeros((len(pred_boxes), len(gt_boxes)), dtype=np.float32)
+    for i, p in enumerate(pred_boxes):
+        px1, py1, px2, py2 = p
+        p_area = max(px2 - px1, 0.0) * max(py2 - py1, 0.0)
+        for j, g in enumerate(gt_boxes):
+            gx1, gy1, gx2, gy2 = g
+            g_area = max(gx2 - gx1, 0.0) * max(gy2 - gy1, 0.0)
+
+            ix1 = max(px1, gx1)
+            iy1 = max(py1, gy1)
+            ix2 = min(px2, gx2)
+            iy2 = min(py2, gy2)
+            inter = max(ix2 - ix1, 0.0) * max(iy2 - iy1, 0.0)
+            union = p_area + g_area - inter
+            if union > 0:
+                ious[i, j] = inter / union
+    return ious
+
+
+def _greedy_match_by_iou(
+    pred_boxes: np.ndarray,
+    gt_boxes: np.ndarray,
+    min_iou: float = 0.1,
+) -> list[tuple[int, int, float]]:
+    """Greedily match predictions to GT using highest-IoU pairs first."""
+    ious = _bbox_iou_matrix(pred_boxes, gt_boxes)
+    matches: list[tuple[int, int, float]] = []
+    used_pred: set[int] = set()
+    used_gt: set[int] = set()
+
+    while ious.size:
+        flat_idx = int(np.argmax(ious))
+        best_iou = float(ious.flat[flat_idx])
+        if best_iou < min_iou:
+            break
+
+        pred_idx, gt_idx = np.unravel_index(flat_idx, ious.shape)
+        if pred_idx in used_pred or gt_idx in used_gt:
+            ious[pred_idx, gt_idx] = -1.0
+            continue
+
+        matches.append((pred_idx, gt_idx, best_iou))
+        used_pred.add(pred_idx)
+        used_gt.add(gt_idx)
+        ious[pred_idx, :] = -1.0
+        ious[:, gt_idx] = -1.0
+
+    return matches
+
+
 # ---------------------------------------------------------------------------
 # Regression metrics helpers
 # ---------------------------------------------------------------------------
@@ -136,7 +191,7 @@ def mask_iou(pred_mask: np.ndarray, gt_mask: np.ndarray) -> float:
     return float(inter / (union + 1e-6))
 
 
-def _keypoints_xy_array(value: Any, n_match: int) -> np.ndarray | None:
+def _keypoints_xy_array(value: Any) -> np.ndarray | None:
     """Normalize keypoint containers to an ``(N, K, 2)`` numpy array."""
     if value is None:
         return None
@@ -146,7 +201,6 @@ def _keypoints_xy_array(value: Any, n_match: int) -> np.ndarray | None:
     else:
         arr = value.cpu().numpy()
 
-    arr = arr[:n_match]
     if arr.ndim != 3 or arr.shape[-1] < 2:
         return None
     return arr[:, :, :2]
@@ -225,6 +279,7 @@ class FiberEvaluator:
         oks_scores: list[float] = []
         pck_scores: dict[str, list[float]] = defaultdict(list)
         iou_scores: list[float] = []
+        matched_ious: list[float] = []
 
         for pred_entry, gt_entry in zip(self._predictions, self._ground_truths):
             p_inst: Instances = pred_entry["instances"]
@@ -235,7 +290,16 @@ class FiberEvaluator:
             if n_pred == 0 or n_gt == 0:
                 continue
 
-            n_match = min(n_pred, n_gt)
+            pred_boxes = p_inst.pred_boxes.tensor.cpu().numpy()[:n_pred]
+            gt_boxes = g_inst.gt_boxes.tensor.cpu().numpy()[:n_gt]
+            matches = _greedy_match_by_iou(pred_boxes, gt_boxes)
+            if not matches:
+                continue
+
+            pred_idx = np.array([m[0] for m in matches], dtype=np.int64)
+            gt_idx = np.array([m[1] for m in matches], dtype=np.int64)
+            matched_ious.extend([m[2] for m in matches])
+            n_match = len(matches)
 
             # ---- Regression ----
             for attr_pred, attr_gt, p_list, g_list in [
@@ -246,26 +310,29 @@ class FiberEvaluator:
                 ("pred_fiber_tortuosity", "gt_fiber_tortuosity", pred_torts, gt_torts),
             ]:
                 if hasattr(p_inst, attr_pred) and hasattr(g_inst, attr_gt):
-                    p_vals = getattr(p_inst, attr_pred).cpu().numpy()[:n_match]
-                    g_vals = getattr(g_inst, attr_gt).cpu().numpy()[:n_match]
+                    p_vals = getattr(p_inst, attr_pred).cpu().numpy()[pred_idx]
+                    g_vals = getattr(g_inst, attr_gt).cpu().numpy()[gt_idx]
                     p_list.extend(p_vals.tolist())
                     g_list.extend(g_vals.tolist())
 
             # ---- Keypoints ----
             if hasattr(p_inst, "pred_keypoints") and hasattr(g_inst, "gt_keypoints"):
-                p_kps = _keypoints_xy_array(p_inst.pred_keypoints, n_match)
-                g_kps = _keypoints_xy_array(g_inst.gt_keypoints, n_match)
+                p_kps = _keypoints_xy_array(p_inst.pred_keypoints)
+                g_kps = _keypoints_xy_array(g_inst.gt_keypoints)
                 if p_kps is None or g_kps is None:
                     p_kps = None
                     g_kps = None
 
                 if p_kps is not None and g_kps is not None:
-                    gt_boxes = g_inst.gt_boxes.tensor.cpu().numpy()[:n_match]
-                    bbox_areas = (gt_boxes[:, 2] - gt_boxes[:, 0]) * (
-                        gt_boxes[:, 3] - gt_boxes[:, 1]
+                    p_kps = p_kps[pred_idx]
+                    g_kps = g_kps[gt_idx]
+                    gt_boxes_matched = gt_boxes[gt_idx]
+                    bbox_areas = (gt_boxes_matched[:, 2] - gt_boxes_matched[:, 0]) * (
+                        gt_boxes_matched[:, 3] - gt_boxes_matched[:, 1]
                     )
                     bbox_sizes = np.maximum(
-                        gt_boxes[:, 2] - gt_boxes[:, 0], gt_boxes[:, 3] - gt_boxes[:, 1]
+                        gt_boxes_matched[:, 2] - gt_boxes_matched[:, 0],
+                        gt_boxes_matched[:, 3] - gt_boxes_matched[:, 1],
                     )
 
                     for i in range(n_match):
@@ -276,9 +343,9 @@ class FiberEvaluator:
 
             # ---- Mask IoU ----
             if hasattr(p_inst, "pred_masks") and hasattr(g_inst, "gt_masks"):
-                p_masks = (p_inst.pred_masks.cpu().numpy() > 0.5)[:n_match]
+                p_masks = (p_inst.pred_masks.cpu().numpy() > 0.5)[pred_idx]
                 if hasattr(g_inst.gt_masks, "tensor"):
-                    g_masks = g_inst.gt_masks.tensor.cpu().numpy()[:n_match]
+                    g_masks = g_inst.gt_masks.tensor.cpu().numpy()[gt_idx]
                 else:
                     image_height, image_width = g_inst.image_size
                     g_masks = np.stack(
@@ -288,7 +355,7 @@ class FiberEvaluator:
                                 image_height,
                                 image_width,
                             )
-                            for i in range(n_match)
+                            for i in gt_idx.tolist()
                         ]
                     )
                 for p_m, g_m in zip(p_masks, g_masks):
@@ -322,6 +389,9 @@ class FiberEvaluator:
 
         if iou_scores:
             results["segmentation/mIoU"] = float(np.mean(iou_scores))
+        if matched_ious:
+            results["matching/MeanBBoxIoU"] = float(np.mean(matched_ious))
+            results["matching/MatchedPairs"] = float(len(matched_ious))
 
         # Log
         for k, v in sorted(results.items()):
