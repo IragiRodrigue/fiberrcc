@@ -1,0 +1,4 @@
+2026-07-15 10:11:05.798 | INFO     | __main__:main:101 - Output dir : output\run12_boxes_tuned
+2026-07-15 10:11:05.799 | INFO     | __main__:main:102 - Batch size : 2
+2026-07-15 10:11:05.799 | INFO     | __main__:main:103 - Max iter   : 4000
+2026-07-15 11:51:05.955 | SUCCESS  | __main__:main:120 - Training complete → output\run12_boxes_tuned

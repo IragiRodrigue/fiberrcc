@@ -1,0 +1,12 @@
+{
+  "width/MAE": 27.544986832816647,
+  "width/RMSE": 29.423422271275882,
+  "length/MAE": 348.90352313923387,
+  "length/RMSE": 423.3906610180809,
+  "curvature/MAE": 0.1031647727315156,
+  "curvature/RMSE": 0.10547391618254816,
+  "tortuosity/MAE": 0.19419244550309092,
+  "tortuosity/RMSE": 0.30745269936872865,
+  "orientation/AngularError": 46.196383633703554,
+  "segmentation/mIoU": 0.0
+}
