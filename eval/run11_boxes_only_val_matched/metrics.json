@@ -1,0 +1,14 @@
+{
+  "width/MAE": 34.748813128862224,
+  "width/RMSE": 37.38056108214587,
+  "length/MAE": 409.7992851382396,
+  "length/RMSE": 488.7396399240641,
+  "curvature/MAE": 0.0949797703594458,
+  "curvature/RMSE": 0.09648671977489727,
+  "tortuosity/MAE": 0.28913442619511337,
+  "tortuosity/RMSE": 0.7181552396264831,
+  "orientation/AngularError": 40.71252667317625,
+  "segmentation/mIoU": 0.0,
+  "matching/MeanBBoxIoU": 0.3395849035167303,
+  "matching/MatchedPairs": 61.0
+}
