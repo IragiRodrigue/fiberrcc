@@ -186,7 +186,8 @@ class FiberKeypointHead(nn.Module):
         x = self.conv_trunk(features)
         x = x.flatten(1)
         x = self.fc_head(x)
-        pred = self.predictor(x).view(-1, self.num_keypoints, 2)
+        # Predict ROI-local coordinates in [0, 1] for numerical stability.
+        pred = torch.sigmoid(self.predictor(x).view(-1, self.num_keypoints, 2))
 
         loss = None
         if targets is not None:
