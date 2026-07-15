@@ -31,15 +31,14 @@ import cv2
 import numpy as np
 import torch
 try:
-    from detectron2.config import get_cfg
+    from detectron2.config import CfgNode, get_cfg
     from detectron2.engine import DefaultPredictor
     from detectron2.structures import Instances
-    from yacs.config import CfgNode
 except ModuleNotFoundError:
     get_cfg = None          # type: ignore
+    CfgNode = None          # type: ignore
     DefaultPredictor = None  # type: ignore
     Instances = None         # type: ignore
-    CfgNode = None           # type: ignore
 
 from fiberrcnn.geometry import extract_centerline
 from fiberrcnn.morphology import compute_image_morphology
