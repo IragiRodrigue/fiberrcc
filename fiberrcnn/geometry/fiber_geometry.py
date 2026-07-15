@@ -196,6 +196,16 @@ def extract_centerline(
 
     # Convert (row, col) → (col, row) i.e. (x, y)
     centerline_xy = np.array([[c, r] for r, c in path_rc], dtype=float)
+
+    # Canonicalize direction so keypoint index 0 is stable across samples.
+    # We choose lexicographic order in image coordinates: left-to-right,
+    # then top-to-bottom when x is tied.
+    if len(centerline_xy) >= 2:
+        x0, y0 = centerline_xy[0]
+        x1, y1 = centerline_xy[-1]
+        if (x0 > x1) or (x0 == x1 and y0 > y1):
+            centerline_xy = centerline_xy[::-1].copy()
+
     return centerline_xy
 
 
