@@ -136,6 +136,22 @@ def mask_iou(pred_mask: np.ndarray, gt_mask: np.ndarray) -> float:
     return float(inter / (union + 1e-6))
 
 
+def _keypoints_xy_array(value: Any, n_match: int) -> np.ndarray | None:
+    """Normalize keypoint containers to an ``(N, K, 2)`` numpy array."""
+    if value is None:
+        return None
+
+    if hasattr(value, "tensor"):
+        arr = value.tensor.cpu().numpy()
+    else:
+        arr = value.cpu().numpy()
+
+    arr = arr[:n_match]
+    if arr.ndim != 3 or arr.shape[-1] < 2:
+        return None
+    return arr[:, :, :2]
+
+
 # ---------------------------------------------------------------------------
 # FiberEvaluator
 # ---------------------------------------------------------------------------
@@ -237,22 +253,26 @@ class FiberEvaluator:
 
             # ---- Keypoints ----
             if hasattr(p_inst, "pred_keypoints") and hasattr(g_inst, "gt_keypoints"):
-                p_kps = p_inst.pred_keypoints.cpu().numpy()[:n_match, :, :2]
-                g_kps = g_inst.gt_keypoints.tensor.cpu().numpy()[:n_match, :, :2]
+                p_kps = _keypoints_xy_array(p_inst.pred_keypoints, n_match)
+                g_kps = _keypoints_xy_array(g_inst.gt_keypoints, n_match)
+                if p_kps is None or g_kps is None:
+                    p_kps = None
+                    g_kps = None
 
-                gt_boxes = g_inst.gt_boxes.tensor.cpu().numpy()[:n_match]
-                bbox_areas = (gt_boxes[:, 2] - gt_boxes[:, 0]) * (
-                    gt_boxes[:, 3] - gt_boxes[:, 1]
-                )
-                bbox_sizes = np.maximum(
-                    gt_boxes[:, 2] - gt_boxes[:, 0], gt_boxes[:, 3] - gt_boxes[:, 1]
-                )
+                if p_kps is not None and g_kps is not None:
+                    gt_boxes = g_inst.gt_boxes.tensor.cpu().numpy()[:n_match]
+                    bbox_areas = (gt_boxes[:, 2] - gt_boxes[:, 0]) * (
+                        gt_boxes[:, 3] - gt_boxes[:, 1]
+                    )
+                    bbox_sizes = np.maximum(
+                        gt_boxes[:, 2] - gt_boxes[:, 0], gt_boxes[:, 3] - gt_boxes[:, 1]
+                    )
 
-                for i in range(n_match):
-                    oks = compute_oks(p_kps[i], g_kps[i], bbox_areas[i])
-                    oks_scores.append(oks)
-                    for k_str, v in compute_pck(p_kps[i], g_kps[i], bbox_sizes[i]).items():
-                        pck_scores[k_str].append(v)
+                    for i in range(n_match):
+                        oks = compute_oks(p_kps[i], g_kps[i], bbox_areas[i])
+                        oks_scores.append(oks)
+                        for k_str, v in compute_pck(p_kps[i], g_kps[i], bbox_sizes[i]).items():
+                            pck_scores[k_str].append(v)
 
             # ---- Mask IoU ----
             if hasattr(p_inst, "pred_masks") and hasattr(g_inst, "gt_masks"):

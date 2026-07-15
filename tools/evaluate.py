@@ -164,14 +164,17 @@ def main() -> None:
             p_inst = Instances((H, W))
             p_inst.pred_boxes = Boxes(boxes_pred)
             p_inst.scores = torch.tensor([f.confidence for f in pred_inst])
-            p_inst.pred_keypoints = torch.tensor(
-                [f.keypoints for f in pred_inst],
-                dtype=torch.float32,
-            )
-            p_inst.pred_masks = torch.tensor(
-                np.stack(pred.masks).astype(np.float32),
-                dtype=torch.float32,
-            )
+
+            if pred_inst and all(len(f.keypoints) > 0 for f in pred_inst):
+                p_inst.pred_keypoints = torch.tensor(
+                    [f.keypoints for f in pred_inst],
+                    dtype=torch.float32,
+                )
+            if pred.masks:
+                p_inst.pred_masks = torch.tensor(
+                    np.stack(pred.masks).astype(np.float32),
+                    dtype=torch.float32,
+                )
 
             for attr in ("fiber_width", "fiber_length", "fiber_curvature",
                          "fiber_orientation", "fiber_tortuosity"):
