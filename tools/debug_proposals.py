@@ -64,7 +64,7 @@ def main() -> None:
     import numpy as np
     import torch
     from detectron2.checkpoint import DetectionCheckpointer
-    from detectron2.config import get_cfg
+    from detectron2.config import CfgNode, get_cfg
     from detectron2.data import DatasetCatalog
     from detectron2.data import transforms as T
     from detectron2.data import detection_utils as utils
@@ -81,6 +81,14 @@ def main() -> None:
 
     cfg = get_cfg()
     _add_fiber_cfg_defaults(cfg)
+    if not hasattr(cfg.MODEL.FIBER_HEADS, "USE_STANDARD_KEYPOINT_HEAD"):
+        cfg.MODEL.FIBER_HEADS.USE_STANDARD_KEYPOINT_HEAD = False
+    if not hasattr(cfg.MODEL.FIBER_HEADS, "LOSS_WEIGHT_MASK"):
+        cfg.MODEL.FIBER_HEADS.LOSS_WEIGHT_MASK = 2.0
+    if not hasattr(cfg.MODEL.FIBER_HEADS, "LOSS_WEIGHT_KEYPOINTS"):
+        cfg.MODEL.FIBER_HEADS.LOSS_WEIGHT_KEYPOINTS = 2.0
+    if not hasattr(cfg.SOLVER, "CUSTOM_HEAD_LR_FACTOR"):
+        cfg.SOLVER.CUSTOM_HEAD_LR_FACTOR = 3.0
     cfg.merge_from_file(str(args.config))
     if args.weights is not None:
         cfg.MODEL.WEIGHTS = str(args.weights)
