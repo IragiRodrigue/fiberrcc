@@ -1,0 +1,4 @@
+2026-07-16 07:16:17.418 | INFO     | __main__:main:101 - Output dir : output\run15_full_heads_orderfix
+2026-07-16 07:16:17.418 | INFO     | __main__:main:102 - Batch size : 2
+2026-07-16 07:16:17.419 | INFO     | __main__:main:103 - Max iter   : 5000
+2026-07-16 10:32:20.762 | SUCCESS  | __main__:main:120 - Training complete → output\run15_full_heads_orderfix
