@@ -1,0 +1,4 @@
+2026-07-16 19:22:31.118 | INFO     | __main__:main:101 - Output dir : output\run_debug_std_mask_std_kp_small
+2026-07-16 19:22:31.119 | INFO     | __main__:main:102 - Batch size : 1
+2026-07-16 19:22:31.119 | INFO     | __main__:main:103 - Max iter   : 320
+2026-07-16 19:24:48.154 | SUCCESS  | __main__:main:120 - Training complete → output\run_debug_std_mask_std_kp_small

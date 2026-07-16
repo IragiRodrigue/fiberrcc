@@ -1,0 +1,3 @@
+2026-07-16 17:10:50.289 | INFO     | __main__:main:101 - Output dir : output\run_debug_weighted
+2026-07-16 17:10:50.289 | INFO     | __main__:main:102 - Batch size : 2
+2026-07-16 17:10:50.289 | INFO     | __main__:main:103 - Max iter   : 600
