@@ -32,7 +32,10 @@ from detectron2.config import CfgNode, get_cfg
 from detectron2.data import build_detection_test_loader, build_detection_train_loader
 from detectron2.engine import DefaultTrainer, HookBase, hooks
 from detectron2.evaluation import COCOEvaluator, DatasetEvaluators
-from detectron2.solver import maybe_add_gradient_clipping
+try:
+    from detectron2.solver import maybe_add_gradient_clipping
+except ImportError:
+    from detectron2.solver.build import maybe_add_gradient_clipping
 from detectron2.utils import comm
 from detectron2.utils.events import EventStorage, get_event_storage
 from torch.utils.tensorboard import SummaryWriter
