@@ -89,6 +89,7 @@ class FiberROIHeads(StandardROIHeads):
         self.enable_fiber_keypoints = bool(cfg.MODEL.FIBER_HEADS.ENABLE_KEYPOINTS)
         self.enable_fiber_regression = bool(cfg.MODEL.FIBER_HEADS.ENABLE_REGRESSION)
         self.enable_fiber_quality = bool(cfg.MODEL.FIBER_HEADS.ENABLE_QUALITY)
+        self.use_standard_mask_head = bool(cfg.MODEL.FIBER_HEADS.USE_STANDARD_MASK_HEAD)
         self.fiber_mask_loss_weight = float(cfg.MODEL.FIBER_HEADS.LOSS_WEIGHT_MASK)
         self.fiber_keypoint_loss_weight = float(cfg.MODEL.FIBER_HEADS.LOSS_WEIGHT_KEYPOINTS)
 
@@ -173,12 +174,14 @@ class FiberROIHeads(StandardROIHeads):
         if self.training:
             losses.update(self.box_predictor.losses(predictions, proposals))
             # ── Fiber heads ───────────────────────────────────────────
-            losses.update(
-                self._forward_fiber_heads_train(feature_list, proposals)
-            )
+            if self.use_standard_mask_head:
+                losses.update(StandardROIHeads._forward_mask(self, features, proposals))
+            losses.update(self._forward_fiber_heads_train(feature_list, proposals))
             return [], losses
         else:
             pred_instances, _ = self.box_predictor.inference(predictions, proposals)
+            if self.use_standard_mask_head:
+                pred_instances = StandardROIHeads._forward_mask(self, features, pred_instances)
             pred_instances = self._forward_fiber_heads_inference(
                 feature_list, pred_instances
             )
@@ -222,7 +225,11 @@ class FiberROIHeads(StandardROIHeads):
             return losses
 
         # ── Mask ──────────────────────────────────────────────────────
-        if self.enable_fiber_mask and all(hasattr(p, "gt_masks") for p in fg_only):
+        if (
+            self.enable_fiber_mask
+            and not self.use_standard_mask_head
+            and all(hasattr(p, "gt_masks") for p in fg_only)
+        ):
             gt_masks_list = []
             for p in fg_only:
                 crop = p.gt_masks.crop_and_resize(
@@ -337,7 +344,7 @@ class FiberROIHeads(StandardROIHeads):
         pred_masks = pred_kps = pred_width = pred_length = None
         pred_curv = pred_orient = pred_tort = pred_quality = None
 
-        if self.enable_fiber_mask:
+        if self.enable_fiber_mask and not self.use_standard_mask_head:
             pred_masks, _ = self.fiber_mask_head(feats)
             mask_rcnn_inference(pred_masks, pred_instances)
 

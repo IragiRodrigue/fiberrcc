@@ -55,6 +55,7 @@ def _add_fiber_cfg_defaults(cfg: Any) -> None:
     cfg.MODEL.FIBER_HEADS.ENABLE_KEYPOINTS = True
     cfg.MODEL.FIBER_HEADS.ENABLE_REGRESSION = True
     cfg.MODEL.FIBER_HEADS.ENABLE_QUALITY = True
+    cfg.MODEL.FIBER_HEADS.USE_STANDARD_MASK_HEAD = False
 
 
 # ---------------------------------------------------------------------------
