@@ -116,7 +116,7 @@ def main() -> None:
     for sample in dataset_dicts:
         image = utils.read_image(sample["file_name"], format=cfg.INPUT.FORMAT)
         aug_input = T.AugInput(image)
-        resize_aug(aug_input)
+        resize_transform = resize_aug(aug_input)
         image_resized = aug_input.image
         resized_h, resized_w = image_resized.shape[:2]
 
@@ -127,7 +127,7 @@ def main() -> None:
         if not boxes_xyxy:
             continue
 
-        gt_boxes_np = aug_input.transform.apply_box(
+        gt_boxes_np = resize_transform.apply_box(
             np.asarray(boxes_xyxy, dtype=np.float32)
         )
         gt_boxes_np = np.clip(
