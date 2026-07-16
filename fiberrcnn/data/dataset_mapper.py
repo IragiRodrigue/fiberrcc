@@ -21,7 +21,6 @@ from detectron2.data import DatasetCatalog, MetadataCatalog
 from detectron2.data import detection_utils as utils
 from detectron2.data import transforms as T
 from detectron2.structures import (
-    BitMasks,
     Boxes,
     Instances,
     Keypoints,
@@ -33,6 +32,20 @@ logger = logging.getLogger(__name__)
 NUM_KEYPOINTS = 40
 KEYPOINT_NAMES = [f"kp{i:02d}" for i in range(NUM_KEYPOINTS)]
 KEYPOINT_FLIP_MAP: list[tuple[str, str]] = []
+
+
+def _canonicalize_keypoint_order(keypoints: np.ndarray) -> np.ndarray:
+    """Keep centerline keypoints in a stable start-to-end order after augmentation."""
+    if keypoints.shape[0] < 2:
+        return keypoints
+
+    first_xy = keypoints[0, :2]
+    last_xy = keypoints[-1, :2]
+    if (first_xy[0] > last_xy[0]) or (
+        np.isclose(first_xy[0], last_xy[0]) and first_xy[1] > last_xy[1]
+    ):
+        return keypoints[::-1].copy()
+    return keypoints
 
 
 # ---------------------------------------------------------------------------
@@ -72,7 +85,6 @@ def load_coco_fiber_json(
             obj: dict[str, Any] = {
                 "bbox": ann["bbox"],
                 "bbox_mode": 1,  # XYWH_ABS
-                # Keep segmentation as polygon list — NOT pre-rasterised
                 "segmentation": ann["segmentation"],
                 "category_id": max(dataset_category_id - 1, 0),
                 "keypoints": ann.get("keypoints", []),
@@ -163,7 +175,6 @@ class FiberDatasetMapper:
         image = utils.read_image(dataset_dict["file_name"], format=self.image_format)
         utils.check_image_size(dataset_dict, image)
 
-        # Apply augmentations to image only
         aug_input = T.AugInput(image)
         transforms = T.AugmentationList(self.augmentations)(aug_input)
         image = aug_input.image
@@ -182,28 +193,25 @@ class FiberDatasetMapper:
             dataset_dict["instances"] = Instances(image.shape[:2])
             return dataset_dict
 
-        image_shape = image.shape[:2]  # (H, W) after resize
+        image_shape = image.shape[:2]
+        H, W = image_shape
 
-        # ── Boxes ──────────────────────────────────────────────────────
         from detectron2.structures import BoxMode
+
         boxes = [
             BoxMode.convert(a["bbox"], BoxMode.XYWH_ABS, BoxMode.XYXY_ABS)
             for a in anns
         ]
         boxes_t = transforms.apply_box(np.array(boxes, dtype=np.float32))
-        # Clip to image bounds
-        H, W = image_shape
         boxes_t = np.clip(boxes_t, [0, 0, 0, 0], [W, H, W, H])
 
         target = Instances(image_shape)
         target.gt_boxes = Boxes(torch.tensor(boxes_t, dtype=torch.float32))
         target.gt_classes = torch.zeros(len(anns), dtype=torch.int64)
 
-        # ── Masks — use PolygonMasks, transform coords only ────────────
         polys = []
         for ann in anns:
             seg = ann.get("segmentation", [[]])
-            # Each seg is a list of [x0,y0,x1,y1,...] flat arrays
             transformed_polys = []
             for poly_flat in seg:
                 pts = np.array(poly_flat, dtype=np.float64).reshape(-1, 2)
@@ -212,10 +220,6 @@ class FiberDatasetMapper:
             polys.append(transformed_polys)
         target.gt_masks = PolygonMasks(polys)
 
-        # ── Keypoints ──────────────────────────────────────────────────
-        # Keypoints are stored normalised [0,1] in the JSON.
-        # We keep them in [0,1] space — NO apply_coords (which would
-        # convert back to absolute pixels and cause loss explosion).
         kps_list = []
         has_kps = any(a.get("keypoints") for a in anns)
         if has_kps:
@@ -223,29 +227,34 @@ class FiberDatasetMapper:
                 kps_flat = ann.get("keypoints", [])
                 if kps_flat:
                     kps = np.array(kps_flat, dtype=np.float32).reshape(-1, 3)
-                    # xy already in [0,1] — just keep as-is
+                    abs_xy = kps[:, :2].copy()
+                    abs_xy[:, 0] *= max(dataset_dict["width"], 1)
+                    abs_xy[:, 1] *= max(dataset_dict["height"], 1)
+                    abs_xy = transforms.apply_coords(abs_xy)
+                    abs_xy[:, 0] = np.clip(abs_xy[:, 0], 0.0, max(W - 1, 0))
+                    abs_xy[:, 1] = np.clip(abs_xy[:, 1], 0.0, max(H - 1, 0))
+                    kps[:, :2] = abs_xy
+                    kps = _canonicalize_keypoint_order(kps)
+                    kps[:, 0] /= max(W, 1)
+                    kps[:, 1] /= max(H, 1)
                     kps_list.append(kps)
                 else:
                     kps_list.append(np.zeros((NUM_KEYPOINTS, 3), dtype=np.float32))
             target.gt_keypoints = Keypoints(np.stack(kps_list))
 
-        # ── Fiber regression targets ───────────────────────────────────
-        # Values are already normalised to ~[0,1] by the converter.
         for field_name in (
-            "fiber_width", "fiber_length", "fiber_curvature",
-            "fiber_orientation", "fiber_tortuosity",
+            "fiber_width",
+            "fiber_length",
+            "fiber_curvature",
+            "fiber_orientation",
+            "fiber_tortuosity",
         ):
             vals = [float(a.get(field_name, 0.0)) for a in anns]
-            setattr(target, f"gt_{field_name}",
-                    torch.tensor(vals, dtype=torch.float32))
+            setattr(target, f"gt_{field_name}", torch.tensor(vals, dtype=torch.float32))
 
         for field_name in ("has_bead", "is_blurry", "is_crossing"):
             vals = [float(bool(a.get(field_name, False))) for a in anns]
-            setattr(
-                target,
-                f"gt_{field_name}",
-                torch.tensor(vals, dtype=torch.float32),
-            )
+            setattr(target, f"gt_{field_name}", torch.tensor(vals, dtype=torch.float32))
 
         dataset_dict["instances"] = utils.filter_empty_instances(target)
         return dataset_dict
