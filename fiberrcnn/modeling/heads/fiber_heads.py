@@ -44,7 +44,6 @@ def _conv_bn_relu(
 ) -> nn.Sequential:
     return nn.Sequential(
         nn.Conv2d(in_ch, out_ch, kernel, padding=padding, bias=False),
-        nn.BatchNorm2d(out_ch),
         nn.ReLU(inplace=True),
     )
 
@@ -52,7 +51,6 @@ def _conv_bn_relu(
 def _fc_bn_relu(in_feat: int, out_feat: int) -> nn.Sequential:
     return nn.Sequential(
         nn.Linear(in_feat, out_feat, bias=False),
-        nn.BatchNorm1d(out_feat),
         nn.ReLU(inplace=True),
     )
 
