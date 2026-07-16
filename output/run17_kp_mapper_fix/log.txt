@@ -1,0 +1,625 @@
+[07/16 13:24:58] d2.engine.defaults INFO: Model:
+GeneralizedRCNN(
+  (backbone): FPN(
+    (fpn_lateral2): Conv2d(256, 256, kernel_size=(1, 1), stride=(1, 1))
+    (fpn_output2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (fpn_lateral3): Conv2d(512, 256, kernel_size=(1, 1), stride=(1, 1))
+    (fpn_output3): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (fpn_lateral4): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1))
+    (fpn_output4): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (fpn_lateral5): Conv2d(2048, 256, kernel_size=(1, 1), stride=(1, 1))
+    (fpn_output5): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (top_block): LastLevelMaxPool()
+    (bottom_up): ResNet(
+      (stem): BasicStem(
+        (conv1): Conv2d(
+          3, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False
+          (norm): FrozenBatchNorm2d(num_features=64, eps=1e-05)
+        )
+      )
+      (res2): Sequential(
+        (0): BottleneckBlock(
+          (shortcut): Conv2d(
+            64, 256, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+          )
+          (conv1): Conv2d(
+            64, 64, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=64, eps=1e-05)
+          )
+          (conv2): Conv2d(
+            64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=64, eps=1e-05)
+          )
+          (conv3): Conv2d(
+            64, 256, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+          )
+        )
+        (1): BottleneckBlock(
+          (conv1): Conv2d(
+            256, 64, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=64, eps=1e-05)
+          )
+          (conv2): Conv2d(
+            64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=64, eps=1e-05)
+          )
+          (conv3): Conv2d(
+            64, 256, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+          )
+        )
+        (2): BottleneckBlock(
+          (conv1): Conv2d(
+            256, 64, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=64, eps=1e-05)
+          )
+          (conv2): Conv2d(
+            64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=64, eps=1e-05)
+          )
+          (conv3): Conv2d(
+            64, 256, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+          )
+        )
+      )
+      (res3): Sequential(
+        (0): BottleneckBlock(
+          (shortcut): Conv2d(
+            256, 512, kernel_size=(1, 1), stride=(2, 2), bias=False
+            (norm): FrozenBatchNorm2d(num_features=512, eps=1e-05)
+          )
+          (conv1): Conv2d(
+            256, 128, kernel_size=(1, 1), stride=(2, 2), bias=False
+            (norm): FrozenBatchNorm2d(num_features=128, eps=1e-05)
+          )
+          (conv2): Conv2d(
+            128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=128, eps=1e-05)
+          )
+          (conv3): Conv2d(
+            128, 512, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=512, eps=1e-05)
+          )
+        )
+        (1): BottleneckBlock(
+          (conv1): Conv2d(
+            512, 128, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=128, eps=1e-05)
+          )
+          (conv2): Conv2d(
+            128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=128, eps=1e-05)
+          )
+          (conv3): Conv2d(
+            128, 512, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=512, eps=1e-05)
+          )
+        )
+        (2): BottleneckBlock(
+          (conv1): Conv2d(
+            512, 128, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=128, eps=1e-05)
+          )
+          (conv2): Conv2d(
+            128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=128, eps=1e-05)
+          )
+          (conv3): Conv2d(
+            128, 512, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=512, eps=1e-05)
+          )
+        )
+        (3): BottleneckBlock(
+          (conv1): Conv2d(
+            512, 128, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=128, eps=1e-05)
+          )
+          (conv2): Conv2d(
+            128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=128, eps=1e-05)
+          )
+          (conv3): Conv2d(
+            128, 512, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=512, eps=1e-05)
+          )
+        )
+      )
+      (res4): Sequential(
+        (0): BottleneckBlock(
+          (shortcut): Conv2d(
+            512, 1024, kernel_size=(1, 1), stride=(2, 2), bias=False
+            (norm): FrozenBatchNorm2d(num_features=1024, eps=1e-05)
+          )
+          (conv1): Conv2d(
+            512, 256, kernel_size=(1, 1), stride=(2, 2), bias=False
+            (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+          )
+          (conv2): Conv2d(
+            256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+          )
+          (conv3): Conv2d(
+            256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=1024, eps=1e-05)
+          )
+        )
+        (1): BottleneckBlock(
+          (conv1): Conv2d(
+            1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+          )
+          (conv2): Conv2d(
+            256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+          )
+          (conv3): Conv2d(
+            256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=1024, eps=1e-05)
+          )
+        )
+        (2): BottleneckBlock(
+          (conv1): Conv2d(
+            1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+          )
+          (conv2): Conv2d(
+            256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+          )
+          (conv3): Conv2d(
+            256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=1024, eps=1e-05)
+          )
+        )
+        (3): BottleneckBlock(
+          (conv1): Conv2d(
+            1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+          )
+          (conv2): Conv2d(
+            256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+          )
+          (conv3): Conv2d(
+            256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=1024, eps=1e-05)
+          )
+        )
+        (4): BottleneckBlock(
+          (conv1): Conv2d(
+            1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+          )
+          (conv2): Conv2d(
+            256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+          )
+          (conv3): Conv2d(
+            256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=1024, eps=1e-05)
+          )
+        )
+        (5): BottleneckBlock(
+          (conv1): Conv2d(
+            1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+          )
+          (conv2): Conv2d(
+            256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+          )
+          (conv3): Conv2d(
+            256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=1024, eps=1e-05)
+          )
+        )
+      )
+      (res5): Sequential(
+        (0): BottleneckBlock(
+          (shortcut): Conv2d(
+            1024, 2048, kernel_size=(1, 1), stride=(2, 2), bias=False
+            (norm): FrozenBatchNorm2d(num_features=2048, eps=1e-05)
+          )
+          (conv1): Conv2d(
+            1024, 512, kernel_size=(1, 1), stride=(2, 2), bias=False
+            (norm): FrozenBatchNorm2d(num_features=512, eps=1e-05)
+          )
+          (conv2): Conv2d(
+            512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=512, eps=1e-05)
+          )
+          (conv3): Conv2d(
+            512, 2048, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=2048, eps=1e-05)
+          )
+        )
+        (1): BottleneckBlock(
+          (conv1): Conv2d(
+            2048, 512, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=512, eps=1e-05)
+          )
+          (conv2): Conv2d(
+            512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=512, eps=1e-05)
+          )
+          (conv3): Conv2d(
+            512, 2048, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=2048, eps=1e-05)
+          )
+        )
+        (2): BottleneckBlock(
+          (conv1): Conv2d(
+            2048, 512, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=512, eps=1e-05)
+          )
+          (conv2): Conv2d(
+            512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=512, eps=1e-05)
+          )
+          (conv3): Conv2d(
+            512, 2048, kernel_size=(1, 1), stride=(1, 1), bias=False
+            (norm): FrozenBatchNorm2d(num_features=2048, eps=1e-05)
+          )
+        )
+      )
+    )
+  )
+  (proposal_generator): RPN(
+    (rpn_head): StandardRPNHead(
+      (conv): Conv2d(
+        256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)
+        (activation): ReLU()
+      )
+      (objectness_logits): Conv2d(256, 3, kernel_size=(1, 1), stride=(1, 1))
+      (anchor_deltas): Conv2d(256, 12, kernel_size=(1, 1), stride=(1, 1))
+    )
+    (anchor_generator): DefaultAnchorGenerator(
+      (cell_anchors): BufferList()
+    )
+  )
+  (roi_heads): FiberROIHeads(
+    (box_pooler): ROIPooler(
+      (level_poolers): ModuleList(
+        (0): ROIAlign(output_size=(7, 7), spatial_scale=0.25, sampling_ratio=0, aligned=True)
+        (1): ROIAlign(output_size=(7, 7), spatial_scale=0.125, sampling_ratio=0, aligned=True)
+        (2): ROIAlign(output_size=(7, 7), spatial_scale=0.0625, sampling_ratio=0, aligned=True)
+        (3): ROIAlign(output_size=(7, 7), spatial_scale=0.03125, sampling_ratio=0, aligned=True)
+      )
+    )
+    (box_head): FastRCNNConvFCHead(
+      (flatten): Flatten(start_dim=1, end_dim=-1)
+      (fc1): Linear(in_features=12544, out_features=1024, bias=True)
+      (fc_relu1): ReLU()
+      (fc2): Linear(in_features=1024, out_features=1024, bias=True)
+      (fc_relu2): ReLU()
+    )
+    (box_predictor): FastRCNNOutputLayers(
+      (cls_score): Linear(in_features=1024, out_features=2, bias=True)
+      (bbox_pred): Linear(in_features=1024, out_features=4, bias=True)
+    )
+    (fiber_pooler): ROIPooler(
+      (level_poolers): ModuleList(
+        (0): ROIAlign(output_size=(14, 14), spatial_scale=0.25, sampling_ratio=0, aligned=True)
+        (1): ROIAlign(output_size=(14, 14), spatial_scale=0.125, sampling_ratio=0, aligned=True)
+        (2): ROIAlign(output_size=(14, 14), spatial_scale=0.0625, sampling_ratio=0, aligned=True)
+        (3): ROIAlign(output_size=(14, 14), spatial_scale=0.03125, sampling_ratio=0, aligned=True)
+      )
+    )
+    (fiber_mask_head): FiberMaskHead(
+      (convs): Sequential(
+        (0): Sequential(
+          (0): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (1): ReLU(inplace=True)
+        )
+        (1): Sequential(
+          (0): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (1): ReLU(inplace=True)
+        )
+        (2): Sequential(
+          (0): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (1): ReLU(inplace=True)
+        )
+        (3): Sequential(
+          (0): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (1): ReLU(inplace=True)
+        )
+      )
+      (deconv): ConvTranspose2d(256, 256, kernel_size=(2, 2), stride=(2, 2))
+      (predictor): Conv2d(256, 1, kernel_size=(1, 1), stride=(1, 1))
+      (loss_fn): MaskLoss(
+        (dice): BinaryDiceLoss()
+      )
+    )
+    (fiber_keypoint_head): FiberKeypointHead(
+      (conv_trunk): Sequential(
+        (0): Sequential(
+          (0): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (1): ReLU(inplace=True)
+        )
+        (1): Sequential(
+          (0): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (1): ReLU(inplace=True)
+        )
+        (2): Sequential(
+          (0): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (1): ReLU(inplace=True)
+        )
+        (3): Sequential(
+          (0): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (1): ReLU(inplace=True)
+        )
+      )
+      (fc_head): Sequential(
+        (0): Sequential(
+          (0): Linear(in_features=50176, out_features=1024, bias=False)
+          (1): ReLU(inplace=True)
+        )
+        (1): Dropout(p=0.3, inplace=False)
+        (2): Sequential(
+          (0): Linear(in_features=1024, out_features=512, bias=False)
+          (1): ReLU(inplace=True)
+        )
+      )
+      (predictor): Linear(in_features=512, out_features=80, bias=True)
+      (loss_fn): KeypointRegressionLoss()
+    )
+    (fiber_width_head): FiberWidthHead(
+      (head): _ScalarRegressionHead(
+        (pool): AdaptiveAvgPool2d(output_size=1)
+        (mlp): Sequential(
+          (0): Sequential(
+            (0): Linear(in_features=256, out_features=256, bias=False)
+            (1): ReLU(inplace=True)
+          )
+          (1): Linear(in_features=256, out_features=1, bias=True)
+        )
+      )
+    )
+    (fiber_length_head): FiberLengthHead(
+      (head): _ScalarRegressionHead(
+        (pool): AdaptiveAvgPool2d(output_size=1)
+        (mlp): Sequential(
+          (0): Sequential(
+            (0): Linear(in_features=256, out_features=256, bias=False)
+            (1): ReLU(inplace=True)
+          )
+          (1): Linear(in_features=256, out_features=1, bias=True)
+        )
+      )
+    )
+    (fiber_curvature_head): FiberCurvatureHead(
+      (head): _ScalarRegressionHead(
+        (pool): AdaptiveAvgPool2d(output_size=1)
+        (mlp): Sequential(
+          (0): Sequential(
+            (0): Linear(in_features=256, out_features=256, bias=False)
+            (1): ReLU(inplace=True)
+          )
+          (1): Linear(in_features=256, out_features=1, bias=True)
+        )
+      )
+    )
+    (fiber_orientation_head): FiberOrientationHead(
+      (head): _ScalarRegressionHead(
+        (pool): AdaptiveAvgPool2d(output_size=1)
+        (mlp): Sequential(
+          (0): Sequential(
+            (0): Linear(in_features=256, out_features=256, bias=False)
+            (1): ReLU(inplace=True)
+          )
+          (1): Linear(in_features=256, out_features=1, bias=True)
+        )
+      )
+      (loss_fn): CircularOrientationLoss()
+    )
+    (fiber_tortuosity_head): FiberTortuosityHead(
+      (head): _ScalarRegressionHead(
+        (pool): AdaptiveAvgPool2d(output_size=1)
+        (mlp): Sequential(
+          (0): Sequential(
+            (0): Linear(in_features=256, out_features=256, bias=False)
+            (1): ReLU(inplace=True)
+          )
+          (1): Linear(in_features=256, out_features=1, bias=True)
+        )
+      )
+    )
+    (fiber_quality_head): FiberQualityHead(
+      (pool): AdaptiveAvgPool2d(output_size=1)
+      (mlp): Sequential(
+        (0): Sequential(
+          (0): Linear(in_features=256, out_features=256, bias=False)
+          (1): ReLU(inplace=True)
+        )
+        (1): Linear(in_features=256, out_features=3, bias=True)
+      )
+      (loss_fn): QualityLoss(
+        (criterion): BCEWithLogitsLoss()
+      )
+    )
+  )
+)
+[07/16 13:24:58] d2.data.build INFO: Removed 0 images with no usable annotations. 23 images left.
+[07/16 13:24:58] d2.data.build INFO: Distribution of instances among all 1 categories:
+[36m|  category  | #instances   |
+|:----------:|:-------------|
+|   fiber    | 637          |
+|            |              |[0m
+[07/16 13:24:58] d2.data.build INFO: Using training sampler TrainingSampler
+[07/16 13:24:58] d2.data.common INFO: Serializing the dataset using: <class 'detectron2.data.common._TorchSerializedList'>
+[07/16 13:24:58] d2.data.common INFO: Serializing 23 elements to byte tensors and concatenating them all ...
+[07/16 13:24:58] d2.data.common INFO: Serialized dataset takes 1.04 MiB
+[07/16 13:24:58] d2.data.build INFO: Making batched data loader with batch_size=2
+[07/16 13:24:58] d2.checkpoint.detection_checkpoint INFO: [DetectionCheckpointer] Loading from detectron2://ImageNetPretrained/MSRA/R-50.pkl ...
+[07/16 13:24:58] d2.checkpoint.c2_model_loading INFO: Renaming Caffe2 weights ......
+[07/16 13:24:58] d2.checkpoint.c2_model_loading INFO: Following weights matched with submodule backbone.bottom_up - Total num: 54
+[07/16 13:24:58] d2.engine.train_loop INFO: Starting training from iteration 0
+[07/16 13:25:42] d2.utils.events INFO:  eta: 1:10:18  iter: 19  total_loss: 7.482  loss_cls: 0.8695  loss_box_reg: 0.003353  loss_fiber_mask: 0.7065  loss_keypoints: 0.2896  loss_width: 0.2661  loss_length: 0.07347  loss_curvature: 0.2001  loss_orientation: 1.87  loss_tortuosity: 1.242  loss_quality: 0.7051  loss_rpn_cls: 0.7003  loss_rpn_loc: 0.5209    time: 1.7582  last_time: 0.7328  data_time: 0.0895  last_data_time: 0.1116   lr: 9.7405e-06  max_mem: 18608M
+[07/16 13:25:59] d2.utils.events INFO:  eta: 1:02:22  iter: 39  total_loss: 7.231  loss_cls: 0.7454  loss_box_reg: 0.00331  loss_fiber_mask: 0.6975  loss_keypoints: 0.2908  loss_width: 0.2538  loss_length: 0.07052  loss_curvature: 0.2005  loss_orientation: 1.857  loss_tortuosity: 1.23  loss_quality: 0.6974  loss_rpn_cls: 0.6948  loss_rpn_loc: 0.4953    time: 1.2933  last_time: 0.6812  data_time: 0.0960  last_data_time: 0.1030   lr: 1.973e-05  max_mem: 18608M
+[07/16 13:26:16] d2.utils.events INFO:  eta: 1:02:07  iter: 59  total_loss: 6.815  loss_cls: 0.5251  loss_box_reg: 0.003797  loss_fiber_mask: 0.7088  loss_keypoints: 0.2897  loss_width: 0.2252  loss_length: 0.06112  loss_curvature: 0.1814  loss_orientation: 1.764  loss_tortuosity: 1.185  loss_quality: 0.6743  loss_rpn_cls: 0.6882  loss_rpn_loc: 0.4653    time: 1.1373  last_time: 0.6471  data_time: 0.0958  last_data_time: 0.0763   lr: 2.972e-05  max_mem: 18608M
+[07/16 13:26:31] d2.utils.events INFO:  eta: 1:00:40  iter: 79  total_loss: 6.003  loss_cls: 0.3143  loss_box_reg: 0.004123  loss_fiber_mask: 0.7031  loss_keypoints: 0.2871  loss_width: 0.1859  loss_length: 0.05165  loss_curvature: 0.1714  loss_orientation: 1.507  loss_tortuosity: 1.103  loss_quality: 0.6391  loss_rpn_cls: 0.6768  loss_rpn_loc: 0.413    time: 1.0323  last_time: 0.7262  data_time: 0.0968  last_data_time: 0.0777   lr: 3.9711e-05  max_mem: 18608M
+[07/16 13:26:45] d2.utils.events INFO:  eta: 0:59:56  iter: 99  total_loss: 5.209  loss_cls: 0.1991  loss_box_reg: 0.0258  loss_fiber_mask: 0.712  loss_keypoints: 0.2928  loss_width: 0.1452  loss_length: 0.04181  loss_curvature: 0.1672  loss_orientation: 0.9617  loss_tortuosity: 1.016  loss_quality: 0.5926  loss_rpn_cls: 0.662  loss_rpn_loc: 0.4672    time: 0.9685  last_time: 0.7797  data_time: 0.0928  last_data_time: 0.0919   lr: 4.9701e-05  max_mem: 18608M
+[07/16 13:27:00] d2.utils.events INFO:  eta: 0:59:58  iter: 119  total_loss: 4.209  loss_cls: 0.1701  loss_box_reg: 0.1033  loss_fiber_mask: 0.7159  loss_keypoints: 0.2988  loss_width: 0.07819  loss_length: 0.02913  loss_curvature: 0.1328  loss_orientation: 0.2147  loss_tortuosity: 0.8741  loss_quality: 0.4476  loss_rpn_cls: 0.6275  loss_rpn_loc: 0.4733    time: 0.9301  last_time: 0.7670  data_time: 0.0951  last_data_time: 0.0770   lr: 5.9691e-05  max_mem: 18608M
+[07/16 13:27:16] d2.utils.events INFO:  eta: 1:00:27  iter: 139  total_loss: 3.546  loss_cls: 0.2519  loss_box_reg: 0.2757  loss_fiber_mask: 0.7147  loss_keypoints: 0.3045  loss_width: 0.02093  loss_length: 0.02395  loss_curvature: 0.02832  loss_orientation: 0.01701  loss_tortuosity: 0.5664  loss_quality: 0.2396  loss_rpn_cls: 0.5722  loss_rpn_loc: 0.4718    time: 0.9124  last_time: 1.0432  data_time: 0.0943  last_data_time: 0.0911   lr: 6.968e-05  max_mem: 18608M
+[07/16 13:27:57] d2.utils.events INFO:  eta: 1:00:59  iter: 159  total_loss: 3.57  loss_cls: 0.381  loss_box_reg: 0.668  loss_fiber_mask: 0.7351  loss_keypoints: 0.3143  loss_width: 0.001346  loss_length: 0.01946  loss_curvature: 0.00221  loss_orientation: 0.0006792  loss_tortuosity: 0.433  loss_quality: 0.05037  loss_rpn_cls: 0.4523  loss_rpn_loc: 0.4942    time: 1.0545  last_time: 4.3186  data_time: 0.0948  last_data_time: 0.1207   lr: 7.9671e-05  max_mem: 18608M
+[07/16 13:29:05] d2.utils.events INFO:  eta: 1:02:17  iter: 179  total_loss: 3.624  loss_cls: 0.4509  loss_box_reg: 0.7095  loss_fiber_mask: 0.7369  loss_keypoints: 0.3105  loss_width: 0.0005881  loss_length: 0.01874  loss_curvature: 0.002336  loss_orientation: 0.0002686  loss_tortuosity: 0.4154  loss_quality: 0.009806  loss_rpn_cls: 0.3157  loss_rpn_loc: 0.5078    time: 1.3191  last_time: 3.7973  data_time: 0.0948  last_data_time: 0.1290   lr: 8.966e-05  max_mem: 18608M
+[07/16 13:30:13] d2.utils.events INFO:  eta: 1:03:02  iter: 199  total_loss: 3.245  loss_cls: 0.3968  loss_box_reg: 0.6709  loss_fiber_mask: 0.7307  loss_keypoints: 0.3144  loss_width: 0.0005273  loss_length: 0.01498  loss_curvature: 0.002237  loss_orientation: 0.0002075  loss_tortuosity: 0.42  loss_quality: 0.002652  loss_rpn_cls: 0.1964  loss_rpn_loc: 0.4231    time: 1.5283  last_time: 4.1862  data_time: 0.0939  last_data_time: 0.0809   lr: 9.9651e-05  max_mem: 18608M
+[07/16 13:31:18] d2.utils.events INFO:  eta: 1:04:26  iter: 219  total_loss: 3.053  loss_cls: 0.3897  loss_box_reg: 0.7142  loss_fiber_mask: 0.7274  loss_keypoints: 0.3079  loss_width: 0.0006091  loss_length: 0.01726  loss_curvature: 0.002091  loss_orientation: 0.0002327  loss_tortuosity: 0.4191  loss_quality: 0.0009387  loss_rpn_cls: 0.1496  loss_rpn_loc: 0.3661    time: 1.6861  last_time: 3.2027  data_time: 0.0958  last_data_time: 0.0950   lr: 0.00010964  max_mem: 18608M
+[07/16 13:32:23] d2.utils.events INFO:  eta: 1:06:46  iter: 239  total_loss: 3.236  loss_cls: 0.3774  loss_box_reg: 0.6717  loss_fiber_mask: 0.7262  loss_keypoints: 0.3056  loss_width: 0.0006168  loss_length: 0.01386  loss_curvature: 0.001797  loss_orientation: 0.0002157  loss_tortuosity: 0.4184  loss_quality: 0.001069  loss_rpn_cls: 0.1431  loss_rpn_loc: 0.4044    time: 1.8185  last_time: 3.3761  data_time: 0.0904  last_data_time: 0.0891   lr: 0.00011963  max_mem: 18608M
+[07/16 13:33:31] d2.utils.events INFO:  eta: 1:11:33  iter: 259  total_loss: 3.15  loss_cls: 0.3837  loss_box_reg: 0.7243  loss_fiber_mask: 0.7286  loss_keypoints: 0.3011  loss_width: 0.0005554  loss_length: 0.01091  loss_curvature: 0.001535  loss_orientation: 0.0002218  loss_tortuosity: 0.4188  loss_quality: 0.0007079  loss_rpn_cls: 0.1182  loss_rpn_loc: 0.4361    time: 1.9387  last_time: 3.1809  data_time: 0.0987  last_data_time: 0.1026   lr: 0.00012962  max_mem: 18608M
+[07/16 13:34:34] d2.utils.events INFO:  eta: 2:27:21  iter: 279  total_loss: 3.01  loss_cls: 0.3623  loss_box_reg: 0.7255  loss_fiber_mask: 0.713  loss_keypoints: 0.2966  loss_width: 0.0008619  loss_length: 0.01207  loss_curvature: 0.001399  loss_orientation: 0.0002198  loss_tortuosity: 0.4171  loss_quality: 0.0005566  loss_rpn_cls: 0.1066  loss_rpn_loc: 0.3804    time: 2.0281  last_time: 3.4929  data_time: 0.0929  last_data_time: 0.1229   lr: 0.00013961  max_mem: 18608M
+[07/16 13:35:37] d2.utils.events INFO:  eta: 3:24:59  iter: 299  total_loss: 3.111  loss_cls: 0.3549  loss_box_reg: 0.7463  loss_fiber_mask: 0.7226  loss_keypoints: 0.2867  loss_width: 0.0005934  loss_length: 0.01081  loss_curvature: 0.001633  loss_orientation: 0.0002177  loss_tortuosity: 0.4157  loss_quality: 0.00042  loss_rpn_cls: 0.1225  loss_rpn_loc: 0.3505    time: 2.1028  last_time: 3.3336  data_time: 0.0908  last_data_time: 0.1026   lr: 0.0001496  max_mem: 18608M
+[07/16 13:36:44] d2.utils.events INFO:  eta: 3:32:12  iter: 319  total_loss: 3.173  loss_cls: 0.3673  loss_box_reg: 0.7387  loss_fiber_mask: 0.7219  loss_keypoints: 0.2813  loss_width: 0.0004573  loss_length: 0.01187  loss_curvature: 0.001456  loss_orientation: 0.0002242  loss_tortuosity: 0.4188  loss_quality: 0.0004493  loss_rpn_cls: 0.1165  loss_rpn_loc: 0.4094    time: 2.1811  last_time: 3.6241  data_time: 0.0956  last_data_time: 0.0873   lr: 0.00015959  max_mem: 18608M
+[07/16 13:37:50] d2.utils.events INFO:  eta: 3:38:30  iter: 339  total_loss: 3.026  loss_cls: 0.3467  loss_box_reg: 0.7011  loss_fiber_mask: 0.7112  loss_keypoints: 0.2686  loss_width: 0.000549  loss_length: 0.01631  loss_curvature: 0.001381  loss_orientation: 0.0002141  loss_tortuosity: 0.4194  loss_quality: 0.0003181  loss_rpn_cls: 0.106  loss_rpn_loc: 0.3565    time: 2.2474  last_time: 3.9110  data_time: 0.0945  last_data_time: 0.0775   lr: 0.00016958  max_mem: 18608M
+[07/16 13:38:59] d2.utils.events INFO:  eta: 3:43:21  iter: 359  total_loss: 3.126  loss_cls: 0.3703  loss_box_reg: 0.7478  loss_fiber_mask: 0.7041  loss_keypoints: 0.2578  loss_width: 0.0005023  loss_length: 0.01366  loss_curvature: 0.001445  loss_orientation: 0.0002182  loss_tortuosity: 0.4125  loss_quality: 0.0003484  loss_rpn_cls: 0.1165  loss_rpn_loc: 0.4045    time: 2.3138  last_time: 3.3356  data_time: 0.1005  last_data_time: 0.1125   lr: 0.00017957  max_mem: 18608M
+[07/16 13:40:01] d2.utils.events INFO:  eta: 3:45:43  iter: 379  total_loss: 2.948  loss_cls: 0.3575  loss_box_reg: 0.7644  loss_fiber_mask: 0.7005  loss_keypoints: 0.2505  loss_width: 0.0005531  loss_length: 0.01179  loss_curvature: 0.001277  loss_orientation: 0.0002186  loss_tortuosity: 0.4162  loss_quality: 0.0002288  loss_rpn_cls: 0.1154  loss_rpn_loc: 0.3996    time: 2.3553  last_time: 3.2190  data_time: 0.0901  last_data_time: 0.0769   lr: 0.00018956  max_mem: 18608M
+[07/16 13:41:02] d2.utils.events INFO:  eta: 3:46:06  iter: 399  total_loss: 3.081  loss_cls: 0.366  loss_box_reg: 0.7466  loss_fiber_mask: 0.698  loss_keypoints: 0.2445  loss_width: 0.0005792  loss_length: 0.0129  loss_curvature: 0.001387  loss_orientation: 0.0002219  loss_tortuosity: 0.4177  loss_quality: 0.0002804  loss_rpn_cls: 0.1174  loss_rpn_loc: 0.3353    time: 2.3897  last_time: 3.1065  data_time: 0.0900  last_data_time: 0.0761   lr: 0.00019955  max_mem: 18608M
+[07/16 13:42:07] d2.utils.events INFO:  eta: 3:48:24  iter: 419  total_loss: 3.025  loss_cls: 0.3822  loss_box_reg: 0.7424  loss_fiber_mask: 0.7005  loss_keypoints: 0.24  loss_width: 0.0003483  loss_length: 0.01143  loss_curvature: 0.001404  loss_orientation: 0.0002189  loss_tortuosity: 0.4211  loss_quality: 0.000234  loss_rpn_cls: 0.1287  loss_rpn_loc: 0.4098    time: 2.4324  last_time: 3.5456  data_time: 0.1013  last_data_time: 0.0952   lr: 0.00020954  max_mem: 18608M
+[07/16 13:43:14] d2.utils.events INFO:  eta: 3:48:12  iter: 439  total_loss: 3.056  loss_cls: 0.3577  loss_box_reg: 0.7431  loss_fiber_mask: 0.6961  loss_keypoints: 0.237  loss_width: 0.0004589  loss_length: 0.009712  loss_curvature: 0.001129  loss_orientation: 0.0002292  loss_tortuosity: 0.4187  loss_quality: 0.0002882  loss_rpn_cls: 0.1216  loss_rpn_loc: 0.3965    time: 2.4726  last_time: 4.0128  data_time: 0.0947  last_data_time: 0.0990   lr: 0.00021953  max_mem: 18608M
+[07/16 13:44:20] d2.utils.events INFO:  eta: 3:47:43  iter: 459  total_loss: 2.989  loss_cls: 0.3269  loss_box_reg: 0.7255  loss_fiber_mask: 0.6928  loss_keypoints: 0.2357  loss_width: 0.0004959  loss_length: 0.01656  loss_curvature: 0.00152  loss_orientation: 0.000224  loss_tortuosity: 0.4125  loss_quality: 0.0003314  loss_rpn_cls: 0.09787  loss_rpn_loc: 0.4082    time: 2.5096  last_time: 3.2564  data_time: 0.0963  last_data_time: 0.1047   lr: 0.00022952  max_mem: 18608M
+[07/16 13:45:29] d2.utils.events INFO:  eta: 3:48:31  iter: 479  total_loss: 3.006  loss_cls: 0.3504  loss_box_reg: 0.7566  loss_fiber_mask: 0.6854  loss_keypoints: 0.2346  loss_width: 0.0004702  loss_length: 0.01266  loss_curvature: 0.001192  loss_orientation: 0.0002143  loss_tortuosity: 0.42  loss_quality: 0.0003159  loss_rpn_cls: 0.1207  loss_rpn_loc: 0.3977    time: 2.5476  last_time: 3.3438  data_time: 0.0944  last_data_time: 0.0986   lr: 0.00023951  max_mem: 18608M
+[07/16 13:46:36] d2.data.build INFO: Distribution of instances among all 1 categories:
+[36m|  category  | #instances   |
+|:----------:|:-------------|
+|   fiber    | 112          |
+|            |              |[0m
+[07/16 13:46:36] d2.data.common INFO: Serializing the dataset using: <class 'detectron2.data.common._TorchSerializedList'>
+[07/16 13:46:36] d2.data.common INFO: Serializing 2 elements to byte tensors and concatenating them all ...
+[07/16 13:46:36] d2.data.common INFO: Serialized dataset takes 0.17 MiB
+[07/16 13:46:36] d2.evaluation.coco_evaluation WARNING: COCO Evaluator instantiated using config, this is deprecated behavior. Please pass in explicit arguments instead.
+[07/16 13:46:36] d2.evaluation.evaluator INFO: Start inference on 2 batches
+[07/16 13:46:37] d2.evaluation.evaluator INFO: Total inference time: 0:00:00.290397 (0.290397 s / iter per device, on 1 devices)
+[07/16 13:46:37] d2.evaluation.evaluator INFO: Total inference pure compute time: 0:00:00 (0.209735 s / iter per device, on 1 devices)
+[07/16 13:46:37] d2.evaluation.coco_evaluation INFO: Preparing results for COCO format ...
+[07/16 13:46:37] d2.evaluation.coco_evaluation INFO: Saving results to output\run17_kp_mapper_fix\inference\coco_instances_results.json
+[07/16 13:46:37] d2.evaluation.coco_evaluation INFO: Evaluating predictions with unofficial COCO API...
+[07/16 13:46:37] d2.evaluation.fast_eval_api INFO: Evaluate annotation type *bbox*
+[07/16 13:46:37] d2.evaluation.fast_eval_api INFO: COCOeval_opt.evaluate() finished in 0.00 seconds.
+[07/16 13:46:37] d2.evaluation.fast_eval_api INFO: Accumulating evaluation results...
+[07/16 13:46:37] d2.evaluation.fast_eval_api INFO: COCOeval_opt.accumulate() finished in 0.00 seconds.
+[07/16 13:46:37] d2.evaluation.coco_evaluation INFO: Evaluation results for bbox: 
+|  AP   |  AP50  |  AP75  |  APs  |  APm  |  APl  |
+|:-----:|:------:|:------:|:-----:|:-----:|:-----:|
+| 0.358 | 1.485  | 0.043  | 0.000 | 0.000 | 0.980 |
+[07/16 13:46:37] d2.evaluation.fast_eval_api INFO: Evaluate annotation type *keypoints*
+[07/16 13:46:37] d2.evaluation.fast_eval_api INFO: COCOeval_opt.evaluate() finished in 0.02 seconds.
+[07/16 13:46:37] d2.evaluation.fast_eval_api INFO: Accumulating evaluation results...
+[07/16 13:46:37] d2.evaluation.fast_eval_api INFO: COCOeval_opt.accumulate() finished in 0.00 seconds.
+[07/16 13:46:37] d2.evaluation.coco_evaluation INFO: Evaluation results for keypoints: 
+|  AP   |  AP50  |  AP75  |  APm  |  APl  |
+|:-----:|:------:|:------:|:-----:|:-----:|
+| 0.000 | 0.000  | 0.000  | 0.000 | 0.000 |
+[07/16 13:46:37] d2.evaluation.fast_eval_api INFO: Evaluate annotation type *segm*
+[07/16 13:46:37] d2.evaluation.fast_eval_api INFO: COCOeval_opt.evaluate() finished in 0.01 seconds.
+[07/16 13:46:37] d2.evaluation.fast_eval_api INFO: Accumulating evaluation results...
+[07/16 13:46:37] d2.evaluation.fast_eval_api INFO: COCOeval_opt.accumulate() finished in 0.00 seconds.
+[07/16 13:46:37] d2.evaluation.coco_evaluation INFO: Evaluation results for segm: 
+|  AP   |  AP50  |  AP75  |  APs  |  APm  |  APl  |
+|:-----:|:------:|:------:|:-----:|:-----:|:-----:|
+| 0.000 | 0.000  | 0.000  | 0.000 | 0.000 | 0.000 |
+[07/16 13:46:37] d2.engine.defaults INFO: Evaluation results for fiber_val in csv format:
+[07/16 13:46:37] d2.evaluation.testing INFO: copypaste: Task: bbox
+[07/16 13:46:37] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75,APs,APm,APl
+[07/16 13:46:37] d2.evaluation.testing INFO: copypaste: 0.3578,1.4851,0.0430,0.0000,0.0000,0.9795
+[07/16 13:46:37] d2.evaluation.testing INFO: copypaste: Task: keypoints
+[07/16 13:46:37] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75,APm,APl
+[07/16 13:46:37] d2.evaluation.testing INFO: copypaste: 0.0000,0.0000,0.0000,0.0000,0.0000
+[07/16 13:46:37] d2.evaluation.testing INFO: copypaste: Task: segm
+[07/16 13:46:37] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75,APs,APm,APl
+[07/16 13:46:37] d2.evaluation.testing INFO: copypaste: 0.0000,0.0000,0.0000,0.0000,0.0000,0.0000
+[07/16 13:46:37] d2.utils.events INFO:  eta: 3:47:55  iter: 499  total_loss: 2.997  loss_cls: 0.3523  loss_box_reg: 0.7055  loss_fiber_mask: 0.6794  loss_keypoints: 0.2285  loss_width: 0.0006228  loss_length: 0.01111  loss_curvature: 0.001154  loss_orientation: 0.0002369  loss_tortuosity: 0.4136  loss_quality: 0.0002969  loss_rpn_cls: 0.1016  loss_rpn_loc: 0.3839    time: 2.5804  last_time: 2.8087  data_time: 0.0864  last_data_time: 0.0907   lr: 0.0002495  max_mem: 18608M
+[07/16 13:47:46] d2.utils.events INFO:  eta: 3:49:53  iter: 519  total_loss: 2.995  loss_cls: 0.3514  loss_box_reg: 0.7535  loss_fiber_mask: 0.6754  loss_keypoints: 0.2294  loss_width: 0.0003783  loss_length: 0.01397  loss_curvature: 0.0009312  loss_orientation: 0.0002347  loss_tortuosity: 0.4197  loss_quality: 0.000268  loss_rpn_cls: 0.09701  loss_rpn_loc: 0.3927    time: 2.6151  last_time: 3.6412  data_time: 0.0966  last_data_time: 0.0995   lr: 0.00025  max_mem: 18608M
+[07/16 13:48:55] d2.utils.events INFO:  eta: 3:50:45  iter: 539  total_loss: 2.904  loss_cls: 0.3538  loss_box_reg: 0.7726  loss_fiber_mask: 0.6708  loss_keypoints: 0.2308  loss_width: 0.0003428  loss_length: 0.01457  loss_curvature: 0.001022  loss_orientation: 0.0002174  loss_tortuosity: 0.4184  loss_quality: 0.0002635  loss_rpn_cls: 0.1027  loss_rpn_loc: 0.3157    time: 2.6462  last_time: 3.2525  data_time: 0.0964  last_data_time: 0.1084   lr: 0.00025  max_mem: 18608M
+[07/16 13:50:05] d2.utils.events INFO:  eta: 3:50:58  iter: 559  total_loss: 3.003  loss_cls: 0.3414  loss_box_reg: 0.7307  loss_fiber_mask: 0.6688  loss_keypoints: 0.2303  loss_width: 0.0004527  loss_length: 0.01786  loss_curvature: 0.0009634  loss_orientation: 0.0002314  loss_tortuosity: 0.4164  loss_quality: 0.0002552  loss_rpn_cls: 0.1107  loss_rpn_loc: 0.388    time: 2.6764  last_time: 3.6869  data_time: 0.0986  last_data_time: 0.1004   lr: 0.00025  max_mem: 18608M
+[07/16 13:51:08] d2.utils.events INFO:  eta: 3:50:07  iter: 579  total_loss: 2.846  loss_cls: 0.3371  loss_box_reg: 0.7189  loss_fiber_mask: 0.6668  loss_keypoints: 0.2277  loss_width: 0.0004052  loss_length: 0.01034  loss_curvature: 0.001154  loss_orientation: 0.0002261  loss_tortuosity: 0.4161  loss_quality: 0.0003057  loss_rpn_cls: 0.09991  loss_rpn_loc: 0.3122    time: 2.6919  last_time: 1.8407  data_time: 0.0907  last_data_time: 0.0700   lr: 0.00025  max_mem: 18608M
+[07/16 13:52:13] d2.utils.events INFO:  eta: 3:51:00  iter: 599  total_loss: 3.004  loss_cls: 0.3518  loss_box_reg: 0.7713  loss_fiber_mask: 0.6649  loss_keypoints: 0.2273  loss_width: 0.0003681  loss_length: 0.01061  loss_curvature: 0.001021  loss_orientation: 0.0002151  loss_tortuosity: 0.4219  loss_quality: 0.0003123  loss_rpn_cls: 0.0953  loss_rpn_loc: 0.3815    time: 2.7103  last_time: 3.6751  data_time: 0.0936  last_data_time: 0.1135   lr: 0.00025  max_mem: 18608M
+[07/16 13:53:23] d2.utils.events INFO:  eta: 3:50:59  iter: 619  total_loss: 2.966  loss_cls: 0.3416  loss_box_reg: 0.7419  loss_fiber_mask: 0.6672  loss_keypoints: 0.2283  loss_width: 0.0003437  loss_length: 0.01146  loss_curvature: 0.001128  loss_orientation: 0.0002111  loss_tortuosity: 0.4187  loss_quality: 0.0003225  loss_rpn_cls: 0.1025  loss_rpn_loc: 0.3617    time: 2.7363  last_time: 2.6585  data_time: 0.1000  last_data_time: 0.0889   lr: 0.00025  max_mem: 18608M
+[07/16 13:54:33] d2.utils.events INFO:  eta: 3:50:10  iter: 639  total_loss: 2.804  loss_cls: 0.3163  loss_box_reg: 0.7156  loss_fiber_mask: 0.6641  loss_keypoints: 0.226  loss_width: 0.0002906  loss_length: 0.01163  loss_curvature: 0.0009003  loss_orientation: 0.000237  loss_tortuosity: 0.4191  loss_quality: 0.0003163  loss_rpn_cls: 0.08853  loss_rpn_loc: 0.3094    time: 2.7607  last_time: 2.9384  data_time: 0.1002  last_data_time: 0.0876   lr: 0.00025  max_mem: 18608M
+[07/16 13:55:47] d2.utils.events INFO:  eta: 3:50:01  iter: 659  total_loss: 2.845  loss_cls: 0.3342  loss_box_reg: 0.7782  loss_fiber_mask: 0.6631  loss_keypoints: 0.2247  loss_width: 0.000276  loss_length: 0.01108  loss_curvature: 0.00118  loss_orientation: 0.0002151  loss_tortuosity: 0.4202  loss_quality: 0.0003187  loss_rpn_cls: 0.1014  loss_rpn_loc: 0.3697    time: 2.7884  last_time: 3.2015  data_time: 0.1050  last_data_time: 0.1048   lr: 0.00025  max_mem: 18608M
+[07/16 13:56:52] d2.utils.events INFO:  eta: 3:49:06  iter: 679  total_loss: 2.953  loss_cls: 0.3376  loss_box_reg: 0.7413  loss_fiber_mask: 0.6663  loss_keypoints: 0.2261  loss_width: 0.0002765  loss_length: 0.01215  loss_curvature: 0.0009558  loss_orientation: 0.0002221  loss_tortuosity: 0.4208  loss_quality: 0.0002631  loss_rpn_cls: 0.09732  loss_rpn_loc: 0.3452    time: 2.8029  last_time: 2.7655  data_time: 0.1038  last_data_time: 0.1111   lr: 0.00025  max_mem: 18608M
+[07/16 13:57:58] d2.utils.events INFO:  eta: 3:48:05  iter: 699  total_loss: 2.987  loss_cls: 0.3392  loss_box_reg: 0.7592  loss_fiber_mask: 0.664  loss_keypoints: 0.2261  loss_width: 0.0003051  loss_length: 0.01094  loss_curvature: 0.001225  loss_orientation: 0.0002343  loss_tortuosity: 0.4162  loss_quality: 0.000326  loss_rpn_cls: 0.09062  loss_rpn_loc: 0.4098    time: 2.8172  last_time: 3.6378  data_time: 0.1019  last_data_time: 0.1098   lr: 0.00025  max_mem: 18608M
+[07/16 13:59:08] d2.utils.events INFO:  eta: 3:47:24  iter: 719  total_loss: 2.883  loss_cls: 0.3426  loss_box_reg: 0.7416  loss_fiber_mask: 0.6602  loss_keypoints: 0.2254  loss_width: 0.0002725  loss_length: 0.01051  loss_curvature: 0.0009591  loss_orientation: 0.0002308  loss_tortuosity: 0.4195  loss_quality: 0.000319  loss_rpn_cls: 0.105  loss_rpn_loc: 0.3731    time: 2.8359  last_time: 3.6897  data_time: 0.1044  last_data_time: 0.0890   lr: 0.00025  max_mem: 18608M
+[07/16 14:00:13] d2.utils.events INFO:  eta: 3:46:21  iter: 739  total_loss: 2.929  loss_cls: 0.3267  loss_box_reg: 0.7682  loss_fiber_mask: 0.6596  loss_keypoints: 0.2262  loss_width: 0.0002871  loss_length: 0.01069  loss_curvature: 0.0009497  loss_orientation: 0.0002218  loss_tortuosity: 0.4191  loss_quality: 0.0003974  loss_rpn_cls: 0.09276  loss_rpn_loc: 0.4085    time: 2.8476  last_time: 3.5781  data_time: 0.1034  last_data_time: 0.1023   lr: 0.00025  max_mem: 18608M
+[07/16 14:01:19] d2.utils.events INFO:  eta: 3:45:26  iter: 759  total_loss: 2.907  loss_cls: 0.3576  loss_box_reg: 0.7575  loss_fiber_mask: 0.6603  loss_keypoints: 0.2267  loss_width: 0.0003126  loss_length: 0.0109  loss_curvature: 0.001074  loss_orientation: 0.000229  loss_tortuosity: 0.419  loss_quality: 0.0003003  loss_rpn_cls: 0.08296  loss_rpn_loc: 0.3373    time: 2.8594  last_time: 2.6892  data_time: 0.1022  last_data_time: 0.1009   lr: 0.00025  max_mem: 18608M
+[07/16 14:02:27] d2.utils.events INFO:  eta: 3:44:40  iter: 779  total_loss: 2.934  loss_cls: 0.3234  loss_box_reg: 0.7246  loss_fiber_mask: 0.6609  loss_keypoints: 0.2258  loss_width: 0.0002945  loss_length: 0.01086  loss_curvature: 0.001043  loss_orientation: 0.0002193  loss_tortuosity: 0.418  loss_quality: 0.000317  loss_rpn_cls: 0.1014  loss_rpn_loc: 0.3294    time: 2.8726  last_time: 3.7685  data_time: 0.1057  last_data_time: 0.1005   lr: 0.00025  max_mem: 18608M
+[07/16 14:03:34] d2.utils.events INFO:  eta: 3:44:06  iter: 799  total_loss: 2.876  loss_cls: 0.3324  loss_box_reg: 0.7972  loss_fiber_mask: 0.663  loss_keypoints: 0.2261  loss_width: 0.0003134  loss_length: 0.01065  loss_curvature: 0.001213  loss_orientation: 0.0002269  loss_tortuosity: 0.4204  loss_quality: 0.0002849  loss_rpn_cls: 0.08363  loss_rpn_loc: 0.3771    time: 2.8851  last_time: 3.0013  data_time: 0.0996  last_data_time: 0.0984   lr: 0.00025  max_mem: 18608M
+[07/16 14:04:44] d2.utils.events INFO:  eta: 3:43:06  iter: 819  total_loss: 2.755  loss_cls: 0.3505  loss_box_reg: 0.7296  loss_fiber_mask: 0.6585  loss_keypoints: 0.2216  loss_width: 0.0002953  loss_length: 0.008853  loss_curvature: 0.001008  loss_orientation: 0.0002463  loss_tortuosity: 0.4213  loss_quality: 0.0003812  loss_rpn_cls: 0.09062  loss_rpn_loc: 0.3084    time: 2.9001  last_time: 3.7854  data_time: 0.1016  last_data_time: 0.0998   lr: 0.00025  max_mem: 18608M
+[07/16 14:05:47] d2.utils.events INFO:  eta: 3:41:39  iter: 839  total_loss: 2.864  loss_cls: 0.3409  loss_box_reg: 0.786  loss_fiber_mask: 0.6612  loss_keypoints: 0.2271  loss_width: 0.0002869  loss_length: 0.01176  loss_curvature: 0.001085  loss_orientation: 0.0002236  loss_tortuosity: 0.4196  loss_quality: 0.000305  loss_rpn_cls: 0.09067  loss_rpn_loc: 0.3268    time: 2.9058  last_time: 2.3955  data_time: 0.0995  last_data_time: 0.0770   lr: 0.00025  max_mem: 18608M
+[07/16 14:06:49] d2.utils.events INFO:  eta: 3:40:24  iter: 859  total_loss: 2.883  loss_cls: 0.3378  loss_box_reg: 0.7701  loss_fiber_mask: 0.6589  loss_keypoints: 0.2245  loss_width: 0.0003  loss_length: 0.009753  loss_curvature: 0.001039  loss_orientation: 0.0002286  loss_tortuosity: 0.4189  loss_quality: 0.0003539  loss_rpn_cls: 0.09865  loss_rpn_loc: 0.3497    time: 2.9106  last_time: 3.3742  data_time: 0.0913  last_data_time: 0.0961   lr: 0.00025  max_mem: 18608M
+[07/16 14:08:00] d2.utils.events INFO:  eta: 3:39:54  iter: 879  total_loss: 2.899  loss_cls: 0.334  loss_box_reg: 0.7435  loss_fiber_mask: 0.6579  loss_keypoints: 0.2246  loss_width: 0.0002596  loss_length: 0.008887  loss_curvature: 0.0008616  loss_orientation: 0.0002243  loss_tortuosity: 0.4231  loss_quality: 0.0003485  loss_rpn_cls: 0.08692  loss_rpn_loc: 0.3878    time: 2.9252  last_time: 3.7732  data_time: 0.0910  last_data_time: 0.0975   lr: 0.00025  max_mem: 18608M
+[07/16 14:09:12] d2.utils.events INFO:  eta: 3:38:56  iter: 899  total_loss: 2.898  loss_cls: 0.3394  loss_box_reg: 0.7827  loss_fiber_mask: 0.6583  loss_keypoints: 0.2232  loss_width: 0.0002735  loss_length: 0.008572  loss_curvature: 0.0008687  loss_orientation: 0.0002152  loss_tortuosity: 0.4153  loss_quality: 0.0001823  loss_rpn_cls: 0.09233  loss_rpn_loc: 0.3623    time: 2.9400  last_time: 3.6706  data_time: 0.0899  last_data_time: 0.0751   lr: 0.00025  max_mem: 18608M
+[07/16 14:10:17] d2.utils.events INFO:  eta: 3:37:55  iter: 919  total_loss: 2.793  loss_cls: 0.3282  loss_box_reg: 0.7792  loss_fiber_mask: 0.6579  loss_keypoints: 0.2235  loss_width: 0.0002642  loss_length: 0.01081  loss_curvature: 0.0009277  loss_orientation: 0.0002246  loss_tortuosity: 0.4193  loss_quality: 0.0002516  loss_rpn_cls: 0.08307  loss_rpn_loc: 0.3566    time: 2.9467  last_time: 3.7509  data_time: 0.0551  last_data_time: 0.0429   lr: 0.00025  max_mem: 18608M
+[07/16 14:11:20] d2.utils.events INFO:  eta: 3:36:47  iter: 939  total_loss: 2.903  loss_cls: 0.3475  loss_box_reg: 0.7882  loss_fiber_mask: 0.6607  loss_keypoints: 0.2237  loss_width: 0.0002785  loss_length: 0.01002  loss_curvature: 0.001006  loss_orientation: 0.0002131  loss_tortuosity: 0.4166  loss_quality: 0.000202  loss_rpn_cls: 0.09498  loss_rpn_loc: 0.3046    time: 2.9507  last_time: 2.7679  data_time: 0.0527  last_data_time: 0.0445   lr: 0.00025  max_mem: 18608M
+[07/16 14:12:23] d2.utils.events INFO:  eta: 3:35:43  iter: 959  total_loss: 2.91  loss_cls: 0.3633  loss_box_reg: 0.7983  loss_fiber_mask: 0.6581  loss_keypoints: 0.2229  loss_width: 0.000243  loss_length: 0.01074  loss_curvature: 0.0008524  loss_orientation: 0.0002234  loss_tortuosity: 0.4212  loss_quality: 0.0002754  loss_rpn_cls: 0.07723  loss_rpn_loc: 0.3363    time: 2.9548  last_time: 2.8209  data_time: 0.0551  last_data_time: 0.0631   lr: 0.00025  max_mem: 18608M
+[07/16 14:13:28] d2.utils.events INFO:  eta: 3:34:38  iter: 979  total_loss: 2.88  loss_cls: 0.3332  loss_box_reg: 0.7793  loss_fiber_mask: 0.6576  loss_keypoints: 0.2228  loss_width: 0.0002739  loss_length: 0.01455  loss_curvature: 0.001087  loss_orientation: 0.0002248  loss_tortuosity: 0.4182  loss_quality: 0.0003822  loss_rpn_cls: 0.08949  loss_rpn_loc: 0.3393    time: 2.9613  last_time: 2.9635  data_time: 0.0738  last_data_time: 0.0913   lr: 0.00025  max_mem: 18608M
+[07/16 14:14:41] d2.data.common INFO: Serializing the dataset using: <class 'detectron2.data.common._TorchSerializedList'>
+[07/16 14:14:41] d2.data.common INFO: Serializing 2 elements to byte tensors and concatenating them all ...
+[07/16 14:14:41] d2.data.common INFO: Serialized dataset takes 0.17 MiB
+[07/16 14:14:41] d2.evaluation.coco_evaluation WARNING: COCO Evaluator instantiated using config, this is deprecated behavior. Please pass in explicit arguments instead.
+[07/16 14:14:41] d2.evaluation.evaluator INFO: Start inference on 2 batches
+[07/16 14:14:43] d2.evaluation.evaluator INFO: Total inference time: 0:00:00.785164 (0.785164 s / iter per device, on 1 devices)
+[07/16 14:14:43] d2.evaluation.evaluator INFO: Total inference pure compute time: 0:00:00 (0.552466 s / iter per device, on 1 devices)
+[07/16 14:14:43] d2.evaluation.coco_evaluation INFO: Preparing results for COCO format ...
+[07/16 14:14:43] d2.evaluation.coco_evaluation INFO: Saving results to output\run17_kp_mapper_fix\inference\coco_instances_results.json
+[07/16 14:14:43] d2.evaluation.coco_evaluation INFO: Evaluating predictions with unofficial COCO API...
+[07/16 14:14:43] d2.evaluation.fast_eval_api INFO: Evaluate annotation type *bbox*
+[07/16 14:14:43] d2.evaluation.fast_eval_api INFO: COCOeval_opt.evaluate() finished in 0.00 seconds.
+[07/16 14:14:43] d2.evaluation.fast_eval_api INFO: Accumulating evaluation results...
+[07/16 14:14:43] d2.evaluation.fast_eval_api INFO: COCOeval_opt.accumulate() finished in 0.00 seconds.
+[07/16 14:14:43] d2.evaluation.coco_evaluation INFO: Evaluation results for bbox: 
+|  AP   |  AP50  |  AP75  |  APs  |  APm  |  APl  |
+|:-----:|:------:|:------:|:-----:|:-----:|:-----:|
+| 0.122 | 0.515  | 0.000  | 0.000 | 0.063 | 1.030 |
+[07/16 14:14:43] d2.evaluation.fast_eval_api INFO: Evaluate annotation type *keypoints*
+[07/16 14:14:43] d2.evaluation.fast_eval_api INFO: COCOeval_opt.evaluate() finished in 0.05 seconds.
+[07/16 14:14:43] d2.evaluation.fast_eval_api INFO: Accumulating evaluation results...
+[07/16 14:14:43] d2.evaluation.fast_eval_api INFO: COCOeval_opt.accumulate() finished in 0.00 seconds.
+[07/16 14:14:43] d2.evaluation.coco_evaluation INFO: Evaluation results for keypoints: 
+|  AP   |  AP50  |  AP75  |  APm  |  APl  |
+|:-----:|:------:|:------:|:-----:|:-----:|
+| 0.000 | 0.000  | 0.000  | 0.000 | 0.000 |
+[07/16 14:14:43] d2.evaluation.fast_eval_api INFO: Evaluate annotation type *segm*
+[07/16 14:14:43] d2.evaluation.fast_eval_api INFO: COCOeval_opt.evaluate() finished in 0.01 seconds.
+[07/16 14:14:43] d2.evaluation.fast_eval_api INFO: Accumulating evaluation results...
+[07/16 14:14:43] d2.evaluation.fast_eval_api INFO: COCOeval_opt.accumulate() finished in 0.00 seconds.
+[07/16 14:14:43] d2.evaluation.coco_evaluation INFO: Evaluation results for segm: 
+|  AP   |  AP50  |  AP75  |  APs  |  APm  |  APl  |
+|:-----:|:------:|:------:|:-----:|:-----:|:-----:|
+| 0.000 | 0.000  | 0.000  | 0.000 | 0.000 | 0.000 |
+[07/16 14:14:43] d2.engine.defaults INFO: Evaluation results for fiber_val in csv format:
+[07/16 14:14:43] d2.evaluation.testing INFO: copypaste: Task: bbox
+[07/16 14:14:43] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75,APs,APm,APl
+[07/16 14:14:43] d2.evaluation.testing INFO: copypaste: 0.1224,0.5147,0.0000,0.0000,0.0628,1.0304
+[07/16 14:14:43] d2.evaluation.testing INFO: copypaste: Task: keypoints
+[07/16 14:14:43] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75,APm,APl
+[07/16 14:14:43] d2.evaluation.testing INFO: copypaste: 0.0000,0.0000,0.0000,0.0000,0.0000
+[07/16 14:14:43] d2.evaluation.testing INFO: copypaste: Task: segm
+[07/16 14:14:43] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75,APs,APm,APl
+[07/16 14:14:43] d2.evaluation.testing INFO: copypaste: 0.0000,0.0000,0.0000,0.0000,0.0000,0.0000
+[07/16 14:14:43] d2.utils.events INFO:  eta: 3:33:52  iter: 999  total_loss: 2.862  loss_cls: 0.3282  loss_box_reg: 0.7751  loss_fiber_mask: 0.6569  loss_keypoints: 0.226  loss_width: 0.0002893  loss_length: 0.009988  loss_curvature: 0.0009257  loss_orientation: 0.0002268  loss_tortuosity: 0.4213  loss_quality: 0.0003464  loss_rpn_cls: 0.07653  loss_rpn_loc: 0.3644    time: 2.9711  last_time: 4.0019  data_time: 0.1125  last_data_time: 0.0972   lr: 0.00025  max_mem: 18608M
+[07/16 14:15:52] d2.utils.events INFO:  eta: 3:33:34  iter: 1019  total_loss: 2.843  loss_cls: 0.3177  loss_box_reg: 0.7812  loss_fiber_mask: 0.658  loss_keypoints: 0.2247  loss_width: 0.0002879  loss_length: 0.008605  loss_curvature: 0.001043  loss_orientation: 0.0002309  loss_tortuosity: 0.4212  loss_quality: 0.0003037  loss_rpn_cls: 0.08061  loss_rpn_loc: 0.3136    time: 2.9805  last_time: 3.5946  data_time: 0.0931  last_data_time: 0.0963   lr: 0.00025  max_mem: 18608M
+[07/16 14:16:57] d2.utils.events INFO:  eta: 3:33:08  iter: 1039  total_loss: 2.819  loss_cls: 0.3312  loss_box_reg: 0.7647  loss_fiber_mask: 0.6554  loss_keypoints: 0.2212  loss_width: 0.0002717  loss_length: 0.009079  loss_curvature: 0.0009562  loss_orientation: 0.0002251  loss_tortuosity: 0.4225  loss_quality: 0.0002092  loss_rpn_cls: 0.07603  loss_rpn_loc: 0.3042    time: 2.9855  last_time: 2.7299  data_time: 0.0619  last_data_time: 0.0620   lr: 0.00025  max_mem: 18608M
+[07/16 14:18:02] d2.utils.events INFO:  eta: 3:32:48  iter: 1059  total_loss: 2.8  loss_cls: 0.3143  loss_box_reg: 0.7686  loss_fiber_mask: 0.6588  loss_keypoints: 0.2236  loss_width: 0.0003003  loss_length: 0.009338  loss_curvature: 0.0008818  loss_orientation: 0.0002178  loss_tortuosity: 0.419  loss_quality: 0.0002106  loss_rpn_cls: 0.06919  loss_rpn_loc: 0.3343    time: 2.9904  last_time: 3.2771  data_time: 0.0821  last_data_time: 0.0782   lr: 0.00025  max_mem: 18608M
+[07/16 14:19:16] d2.utils.events INFO:  eta: 3:33:20  iter: 1079  total_loss: 2.904  loss_cls: 0.3342  loss_box_reg: 0.7685  loss_fiber_mask: 0.6571  loss_keypoints: 0.2249  loss_width: 0.0002577  loss_length: 0.009064  loss_curvature: 0.0009801  loss_orientation: 0.0002161  loss_tortuosity: 0.4196  loss_quality: 0.000238  loss_rpn_cls: 0.07475  loss_rpn_loc: 0.3546    time: 3.0031  last_time: 3.3195  data_time: 0.0958  last_data_time: 0.0962   lr: 0.00025  max_mem: 18608M
+[07/16 14:20:22] d2.utils.events INFO:  eta: 3:32:59  iter: 1099  total_loss: 2.885  loss_cls: 0.3323  loss_box_reg: 0.8079  loss_fiber_mask: 0.6561  loss_keypoints: 0.2251  loss_width: 0.000246  loss_length: 0.009599  loss_curvature: 0.0009315  loss_orientation: 0.0002225  loss_tortuosity: 0.4183  loss_quality: 0.0002513  loss_rpn_cls: 0.06913  loss_rpn_loc: 0.3072    time: 3.0092  last_time: 3.1607  data_time: 0.0967  last_data_time: 0.1027   lr: 0.00025  max_mem: 18608M
+[07/16 14:21:30] d2.utils.events INFO:  eta: 3:32:51  iter: 1119  total_loss: 2.917  loss_cls: 0.3428  loss_box_reg: 0.7783  loss_fiber_mask: 0.6578  loss_keypoints: 0.2226  loss_width: 0.0002137  loss_length: 0.01131  loss_curvature: 0.001007  loss_orientation: 0.0002329  loss_tortuosity: 0.4151  loss_quality: 0.0003594  loss_rpn_cls: 0.06722  loss_rpn_loc: 0.3372    time: 3.0160  last_time: 3.9032  data_time: 0.0944  last_data_time: 0.0955   lr: 0.00025  max_mem: 18608M
+[07/16 14:22:45] d2.utils.events INFO:  eta: 3:33:06  iter: 1139  total_loss: 2.939  loss_cls: 0.3245  loss_box_reg: 0.7977  loss_fiber_mask: 0.6571  loss_keypoints: 0.2212  loss_width: 0.0002502  loss_length: 0.009823  loss_curvature: 0.000981  loss_orientation: 0.000223  loss_tortuosity: 0.4191  loss_quality: 0.0002926  loss_rpn_cls: 0.07559  loss_rpn_loc: 0.3642    time: 3.0283  last_time: 3.4357  data_time: 0.0964  last_data_time: 0.0947   lr: 0.00025  max_mem: 18608M
+[07/16 14:23:54] d2.utils.events INFO:  eta: 3:32:17  iter: 1159  total_loss: 2.884  loss_cls: 0.3301  loss_box_reg: 0.8094  loss_fiber_mask: 0.653  loss_keypoints: 0.2217  loss_width: 0.0002868  loss_length: 0.01091  loss_curvature: 0.0009277  loss_orientation: 0.0002287  loss_tortuosity: 0.4176  loss_quality: 0.0004207  loss_rpn_cls: 0.08749  loss_rpn_loc: 0.3122    time: 3.0360  last_time: 4.3776  data_time: 0.0932  last_data_time: 0.0601   lr: 0.00025  max_mem: 18608M
+[07/16 14:25:04] d2.utils.events INFO:  eta: 3:31:07  iter: 1179  total_loss: 2.856  loss_cls: 0.3438  loss_box_reg: 0.7679  loss_fiber_mask: 0.655  loss_keypoints: 0.2199  loss_width: 0.0002507  loss_length: 0.009156  loss_curvature: 0.0009491  loss_orientation: 0.000225  loss_tortuosity: 0.4207  loss_quality: 0.0002293  loss_rpn_cls: 0.06956  loss_rpn_loc: 0.3493    time: 3.0436  last_time: 3.8917  data_time: 0.0853  last_data_time: 0.1000   lr: 0.00025  max_mem: 18608M
+[07/16 14:26:08] d2.utils.events INFO:  eta: 3:29:55  iter: 1199  total_loss: 2.834  loss_cls: 0.333  loss_box_reg: 0.7762  loss_fiber_mask: 0.6562  loss_keypoints: 0.2229  loss_width: 0.0002978  loss_length: 0.009462  loss_curvature: 0.001055  loss_orientation: 0.0002249  loss_tortuosity: 0.4136  loss_quality: 0.0002324  loss_rpn_cls: 0.08507  loss_rpn_loc: 0.347    time: 3.0464  last_time: 3.2350  data_time: 0.1014  last_data_time: 0.0984   lr: 0.00025  max_mem: 18608M
+[07/16 14:27:16] d2.utils.events INFO:  eta: 3:28:52  iter: 1219  total_loss: 2.9  loss_cls: 0.3252  loss_box_reg: 0.7939  loss_fiber_mask: 0.6581  loss_keypoints: 0.2242  loss_width: 0.0002685  loss_length: 0.008985  loss_curvature: 0.000946  loss_orientation: 0.0002221  loss_tortuosity: 0.4194  loss_quality: 0.000292  loss_rpn_cls: 0.0718  loss_rpn_loc: 0.3286    time: 3.0523  last_time: 3.2872  data_time: 0.0936  last_data_time: 0.0952   lr: 0.00025  max_mem: 18608M
+[07/16 14:28:23] d2.utils.events INFO:  eta: 3:27:47  iter: 1239  total_loss: 2.907  loss_cls: 0.3482  loss_box_reg: 0.8124  loss_fiber_mask: 0.6559  loss_keypoints: 0.2198  loss_width: 0.0002707  loss_length: 0.0106  loss_curvature: 0.001049  loss_orientation: 0.000225  loss_tortuosity: 0.4177  loss_quality: 0.0003439  loss_rpn_cls: 0.07026  loss_rpn_loc: 0.3208    time: 3.0569  last_time: 3.7769  data_time: 0.1055  last_data_time: 0.1311   lr: 0.00025  max_mem: 18608M
+[07/16 14:29:30] d2.utils.events INFO:  eta: 3:26:42  iter: 1259  total_loss: 2.76  loss_cls: 0.3143  loss_box_reg: 0.7711  loss_fiber_mask: 0.6586  loss_keypoints: 0.2241  loss_width: 0.0002428  loss_length: 0.009512  loss_curvature: 0.0009747  loss_orientation: 0.0002232  loss_tortuosity: 0.4235  loss_quality: 0.0003103  loss_rpn_cls: 0.07183  loss_rpn_loc: 0.3301    time: 3.0621  last_time: 3.8863  data_time: 0.0990  last_data_time: 0.1104   lr: 0.00025  max_mem: 18608M
+[07/16 14:30:42] d2.utils.events INFO:  eta: 3:25:59  iter: 1279  total_loss: 2.915  loss_cls: 0.3375  loss_box_reg: 0.826  loss_fiber_mask: 0.6559  loss_keypoints: 0.22  loss_width: 0.0002843  loss_length: 0.009628  loss_curvature: 0.0009936  loss_orientation: 0.0002275  loss_tortuosity: 0.4203  loss_quality: 0.0003033  loss_rpn_cls: 0.07385  loss_rpn_loc: 0.3446    time: 3.0699  last_time: 3.4982  data_time: 0.0977  last_data_time: 0.1027   lr: 0.00025  max_mem: 18608M
+[07/16 14:31:46] d2.utils.events INFO:  eta: 3:24:47  iter: 1299  total_loss: 2.973  loss_cls: 0.349  loss_box_reg: 0.8033  loss_fiber_mask: 0.6554  loss_keypoints: 0.2221  loss_width: 0.0002868  loss_length: 0.01214  loss_curvature: 0.0009583  loss_orientation: 0.0002465  loss_tortuosity: 0.4231  loss_quality: 0.0003259  loss_rpn_cls: 0.07517  loss_rpn_loc: 0.3157    time: 3.0724  last_time: 3.8292  data_time: 0.0956  last_data_time: 0.0909   lr: 0.00025  max_mem: 18608M
+[07/16 14:32:55] d2.utils.events INFO:  eta: 3:23:46  iter: 1319  total_loss: 2.789  loss_cls: 0.3483  loss_box_reg: 0.7913  loss_fiber_mask: 0.6544  loss_keypoints: 0.2234  loss_width: 0.000291  loss_length: 0.008777  loss_curvature: 0.001065  loss_orientation: 0.0002514  loss_tortuosity: 0.4239  loss_quality: 0.0004185  loss_rpn_cls: 0.06819  loss_rpn_loc: 0.3512    time: 3.0778  last_time: 3.7615  data_time: 0.0965  last_data_time: 0.0755   lr: 0.00025  max_mem: 18608M
+[07/16 14:34:03] d2.utils.events INFO:  eta: 3:22:28  iter: 1339  total_loss: 2.756  loss_cls: 0.3099  loss_box_reg: 0.7675  loss_fiber_mask: 0.6538  loss_keypoints: 0.2229  loss_width: 0.0002953  loss_length: 0.009039  loss_curvature: 0.001051  loss_orientation: 0.0002254  loss_tortuosity: 0.4195  loss_quality: 0.0002449  loss_rpn_cls: 0.06769  loss_rpn_loc: 0.3122    time: 3.0823  last_time: 2.9816  data_time: 0.0946  last_data_time: 0.0819   lr: 0.00025  max_mem: 18608M
+[07/16 14:35:08] d2.utils.events INFO:  eta: 3:21:22  iter: 1359  total_loss: 2.882  loss_cls: 0.3305  loss_box_reg: 0.8082  loss_fiber_mask: 0.655  loss_keypoints: 0.2212  loss_width: 0.0002451  loss_length: 0.009003  loss_curvature: 0.0009632  loss_orientation: 0.0002347  loss_tortuosity: 0.4203  loss_quality: 0.0003156  loss_rpn_cls: 0.07871  loss_rpn_loc: 0.2981    time: 3.0851  last_time: 3.5311  data_time: 0.0969  last_data_time: 0.1093   lr: 0.00025  max_mem: 18608M
+[07/16 14:36:15] d2.utils.events INFO:  eta: 3:20:41  iter: 1379  total_loss: 2.833  loss_cls: 0.3508  loss_box_reg: 0.7912  loss_fiber_mask: 0.6555  loss_keypoints: 0.2216  loss_width: 0.0002367  loss_length: 0.009413  loss_curvature: 0.001048  loss_orientation: 0.0002381  loss_tortuosity: 0.4174  loss_quality: 0.0002452  loss_rpn_cls: 0.06235  loss_rpn_loc: 0.3049    time: 3.0891  last_time: 4.4600  data_time: 0.0932  last_data_time: 0.0856   lr: 0.00025  max_mem: 18608M
+[07/16 14:37:23] d2.utils.events INFO:  eta: 3:20:22  iter: 1399  total_loss: 2.81  loss_cls: 0.3155  loss_box_reg: 0.788  loss_fiber_mask: 0.656  loss_keypoints: 0.2226  loss_width: 0.0002788  loss_length: 0.01023  loss_curvature: 0.001078  loss_orientation: 0.0002248  loss_tortuosity: 0.4211  loss_quality: 0.0002413  loss_rpn_cls: 0.05666  loss_rpn_loc: 0.3223    time: 3.0931  last_time: 3.0044  data_time: 0.0960  last_data_time: 0.1107   lr: 0.00025  max_mem: 18608M
+[07/16 14:37:52] d2.engine.hooks INFO: Overall training speed: 1406 iterations in 1:12:33 (3.0964 s / it)
+[07/16 14:37:52] d2.engine.hooks INFO: Total training time: 1:12:41 (0:00:08 on hooks)
+[07/16 14:37:52] d2.utils.events INFO:  eta: 3:20:07  iter: 1408  total_loss: 2.789  loss_cls: 0.3155  loss_box_reg: 0.788  loss_fiber_mask: 0.6556  loss_keypoints: 0.2238  loss_width: 0.0002559  loss_length: 0.009953  loss_curvature: 0.001021  loss_orientation: 0.000231  loss_tortuosity: 0.4214  loss_quality: 0.0002055  loss_rpn_cls: 0.05912  loss_rpn_loc: 0.311    time: 3.0948  last_time: 3.2738  data_time: 0.0819  last_data_time: 0.0535   lr: 0.00025  max_mem: 18608M
