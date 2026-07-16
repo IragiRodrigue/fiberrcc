@@ -18,7 +18,7 @@ Directory:
         --input_dir  /data/test_images \\
         --output_dir ./results \\
         --threshold  0.6 \\
-        --no_morphology  # skip image-level metrics for speed
+        --no_morphology
 """
 
 from __future__ import annotations
@@ -42,6 +42,12 @@ def _parse_args() -> argparse.Namespace:
     p.add_argument("--output_dir", type=Path, required=True, help="Output directory.")
     p.add_argument(
         "--threshold", type=float, default=0.5, help="Detection confidence threshold."
+    )
+    p.add_argument(
+        "--viz_threshold",
+        type=float,
+        default=None,
+        help="Optional stricter threshold used only for saved visualisations.",
     )
     p.add_argument(
         "--no_morphology",
@@ -74,10 +80,12 @@ def main() -> None:
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
+    import cv2
+    import numpy as np
+
     import fiberrcnn  # register models
     from fiberrcnn.engine.inference import FiberPredictor
     from fiberrcnn.visualization import save_visualisation_report
-    import cv2
 
     predictor = FiberPredictor.from_config(
         cfg_path=args.config,
@@ -86,7 +94,6 @@ def main() -> None:
         device=args.device,
     )
 
-    # Collect image paths
     image_paths: list[Path] = []
     if args.input is not None:
         image_paths = [args.input]
@@ -102,7 +109,7 @@ def main() -> None:
         logger.error("No images found.")
         sys.exit(1)
 
-    logger.info(f"Processing {len(image_paths)} image(s) → {args.output_dir}")
+    logger.info(f"Processing {len(image_paths)} image(s) -> {args.output_dir}")
 
     for img_path in image_paths:
         logger.info(f"  {img_path.name}")
@@ -115,43 +122,56 @@ def main() -> None:
         if not args.no_visualise:
             bgr = cv2.imread(str(img_path))
             if bgr is not None:
-                import numpy as np
+                viz_threshold = (
+                    args.threshold if args.viz_threshold is None else args.viz_threshold
+                )
 
-                masks = []
-                centerlines = []
-                keypoints_list = []
+                masks: list[np.ndarray] = []
+                centerlines: list[np.ndarray] = []
+                keypoints_list: list[np.ndarray] = []
+                widths: list[float] = []
+                lengths: list[float] = []
+                orientations: list[float] = []
+                curvatures: list[float] = []
+                tortuosities: list[float] = []
 
-                from fiberrcnn.geometry import extract_centerline, resample_centerline
+                for i, fi in enumerate(pred.fiber_instances):
+                    if fi.confidence < viz_threshold:
+                        continue
+                    if i >= len(pred.masks):
+                        continue
 
-                for fi in pred.fiber_instances:
-                    # Reconstruct a dummy mask from bbox for visualisation
-                    # (real mask would come from pred.fiber_instances mask field
-                    # if we stored it — here we use a placeholder)
-                    H, W = pred.image_height, pred.image_width
-                    m = np.zeros((H, W), dtype=bool)
-                    x, y, w, h = [int(v) for v in fi.bbox]
-                    m[y : y + h, x : x + w] = True
-                    masks.append(m)
+                    mask = np.asarray(pred.masks[i], dtype=bool)
+                    if mask.size == 0 or not mask.any():
+                        continue
 
-                    if fi.keypoints:
-                        kps = np.array(fi.keypoints, dtype=np.float32)
-                        centerlines.append(kps)
-                        keypoints_list.append(kps)
-                    else:
-                        cl = extract_centerline(m)
-                        centerlines.append(cl)
-                        keypoints_list.append(resample_centerline(cl, 40))
+                    masks.append(mask)
+                    centerlines.append(
+                        np.asarray(pred.centerlines[i], dtype=np.float32)
+                        if i < len(pred.centerlines)
+                        else np.zeros((0, 2), dtype=np.float32)
+                    )
+                    keypoints_list.append(
+                        np.asarray(fi.keypoints, dtype=np.float32)
+                        if fi.keypoints
+                        else np.zeros((0, 2), dtype=np.float32)
+                    )
+                    widths.append(fi.fiber_width)
+                    lengths.append(fi.fiber_length)
+                    orientations.append(fi.fiber_orientation)
+                    curvatures.append(fi.fiber_curvature)
+                    tortuosities.append(fi.fiber_tortuosity)
 
                 save_visualisation_report(
                     image=bgr,
                     masks=masks,
                     centerlines=centerlines,
                     keypoints_list=keypoints_list,
-                    widths=[f.fiber_width for f in pred.fiber_instances],
-                    lengths=[f.fiber_length for f in pred.fiber_instances],
-                    orientations=[f.fiber_orientation for f in pred.fiber_instances],
-                    curvatures=[f.fiber_curvature for f in pred.fiber_instances],
-                    tortuosities=[f.fiber_tortuosity for f in pred.fiber_instances],
+                    widths=widths,
+                    lengths=lengths,
+                    orientations=orientations,
+                    curvatures=curvatures,
+                    tortuosities=tortuosities,
                     output_dir=args.output_dir / img_path.stem,
                     image_name=img_path.stem,
                 )

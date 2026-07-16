@@ -8,6 +8,7 @@ All box matching, sampling, and proposal logic is delegated to StandardROIHeads.
 from __future__ import annotations
 
 import logging
+import os
 from typing import Any
 
 import torch
@@ -32,6 +33,8 @@ from fiberrcnn.modeling.heads.fiber_heads import (
 from detectron2.modeling.poolers import ROIPooler
 
 logger = logging.getLogger(__name__)
+_DEBUG_HEADS = os.getenv("FIBERRCNN_DEBUG_HEADS", "0") == "1"
+_DEBUG_HEAD_LIMIT = int(os.getenv("FIBERRCNN_DEBUG_HEAD_LIMIT", "5"))
 
 
 def _keypoints_to_absolute_box_coords(
@@ -81,6 +84,7 @@ class FiberROIHeads(StandardROIHeads):
 
     def __init__(self, cfg: CfgNode, input_shape: dict[str, ShapeSpec]) -> None:
         super().__init__(cfg, input_shape)
+        self._debug_head_logs_remaining = _DEBUG_HEAD_LIMIT
         self.enable_fiber_mask = bool(cfg.MODEL.FIBER_HEADS.ENABLE_MASK)
         self.enable_fiber_keypoints = bool(cfg.MODEL.FIBER_HEADS.ENABLE_KEYPOINTS)
         self.enable_fiber_regression = bool(cfg.MODEL.FIBER_HEADS.ENABLE_REGRESSION)
@@ -113,6 +117,13 @@ class FiberROIHeads(StandardROIHeads):
         self.fiber_orientation_head = FiberOrientationHead(input_channels=in_ch)
         self.fiber_tortuosity_head = FiberTortuosityHead(input_channels=in_ch)
         self.fiber_quality_head    = FiberQualityHead(input_channels=in_ch)
+
+    def _debug_log_head_stats(self, name: str, payload: dict[str, float | int]) -> None:
+        if not _DEBUG_HEADS or self._debug_head_logs_remaining <= 0:
+            return
+        self._debug_head_logs_remaining -= 1
+        parts = ", ".join(f"{k}={v}" for k, v in payload.items())
+        logger.warning("DEBUG_HEADS %s: %s", name, parts)
 
     # ------------------------------------------------------------------
     # Training: called by StandardROIHeads after matching
@@ -218,9 +229,22 @@ class FiberROIHeads(StandardROIHeads):
                 gt_masks_list.append(crop)
             gt_masks = torch.cat(gt_masks_list)
             if gt_masks.shape[0] > 0:
-                _, loss = self.fiber_mask_head(feats, gt_masks)
+                pred_masks, loss = self.fiber_mask_head(feats, gt_masks)
                 if loss is not None:
                     losses["loss_fiber_mask"] = loss
+                gt_occ = gt_masks.float().mean().item()
+                pred_prob = torch.sigmoid(pred_masks.detach())
+                self._debug_log_head_stats(
+                    "mask_train",
+                    {
+                        "n": int(gt_masks.shape[0]),
+                        "gt_occ": round(gt_occ, 4),
+                        "pred_prob_mean": round(pred_prob.mean().item(), 4),
+                        "pred_prob_min": round(pred_prob.min().item(), 4),
+                        "pred_prob_max": round(pred_prob.max().item(), 4),
+                        "loss": round(float(loss.item()) if loss is not None else 0.0, 4),
+                    },
+                )
 
         # ── Keypoints (already normalised [0,1] by converter) ────────
         if self.enable_fiber_keypoints and all(hasattr(p, "gt_keypoints") for p in fg_only):
@@ -236,11 +260,26 @@ class FiberROIHeads(StandardROIHeads):
                 ]
             )
             if gt_kps.shape[0] > 0:
-                _, loss = self.fiber_keypoint_head(
+                pred_kps, loss = self.fiber_keypoint_head(
                     feats, gt_kps[:, :, :2], weights=gt_kps[:, :, 2]
                 )
                 if loss is not None:
                     losses["loss_keypoints"] = loss
+                gt_span_x = (gt_kps[:, :, 0].max(dim=1).values - gt_kps[:, :, 0].min(dim=1).values).mean()
+                gt_span_y = (gt_kps[:, :, 1].max(dim=1).values - gt_kps[:, :, 1].min(dim=1).values).mean()
+                pred_span_x = (pred_kps[:, :, 0].max(dim=1).values - pred_kps[:, :, 0].min(dim=1).values).mean()
+                pred_span_y = (pred_kps[:, :, 1].max(dim=1).values - pred_kps[:, :, 1].min(dim=1).values).mean()
+                self._debug_log_head_stats(
+                    "keypoints_train",
+                    {
+                        "n": int(gt_kps.shape[0]),
+                        "gt_span_x": round(gt_span_x.item(), 4),
+                        "gt_span_y": round(gt_span_y.item(), 4),
+                        "pred_span_x": round(pred_span_x.item(), 4),
+                        "pred_span_y": round(pred_span_y.item(), 4),
+                        "loss": round(float(loss.item()) if loss is not None else 0.0, 4),
+                    },
+                )
 
         # ── Scalar regression ─────────────────────────────────────────
         for attr, head, key in [

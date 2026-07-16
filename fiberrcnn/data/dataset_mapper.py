@@ -11,6 +11,7 @@ from __future__ import annotations
 import copy
 import json
 import logging
+import os
 from pathlib import Path
 from typing import Any
 
@@ -32,6 +33,9 @@ logger = logging.getLogger(__name__)
 NUM_KEYPOINTS = 40
 KEYPOINT_NAMES = [f"kp{i:02d}" for i in range(NUM_KEYPOINTS)]
 KEYPOINT_FLIP_MAP: list[tuple[str, str]] = []
+_DEBUG_TARGETS = os.getenv("FIBERRCNN_DEBUG_TARGETS", "0") == "1"
+_DEBUG_TARGET_LIMIT = int(os.getenv("FIBERRCNN_DEBUG_TARGET_LIMIT", "3"))
+_debug_target_logs_remaining = _DEBUG_TARGET_LIMIT
 
 
 def _canonicalize_keypoint_order(keypoints: np.ndarray) -> np.ndarray:
@@ -46,6 +50,49 @@ def _canonicalize_keypoint_order(keypoints: np.ndarray) -> np.ndarray:
     ):
         return keypoints[::-1].copy()
     return keypoints
+
+
+def _log_debug_targets(
+    dataset_dict: dict[str, Any],
+    image_shape: tuple[int, int],
+    anns: list[dict[str, Any]],
+    polys: list[list[list[float]]],
+    kps_list: list[np.ndarray],
+) -> None:
+    global _debug_target_logs_remaining
+    if not _DEBUG_TARGETS or _debug_target_logs_remaining <= 0:
+        return
+
+    _debug_target_logs_remaining -= 1
+    H, W = image_shape
+    logger.warning(
+        "DEBUG_TARGETS image=%s transformed_hw=(%s,%s) n_anns=%s",
+        dataset_dict.get("file_name", "<unknown>"),
+        H,
+        W,
+        len(anns),
+    )
+    for idx, ann in enumerate(anns[:3]):
+        bbox = ann.get("bbox", [0, 0, 0, 0])
+        seg = polys[idx] if idx < len(polys) else []
+        kp = kps_list[idx] if idx < len(kps_list) else np.zeros((0, 3), dtype=np.float32)
+        n_polys = len(seg)
+        n_pts = sum(len(poly) // 2 for poly in seg)
+        if kp.size:
+            kp_x_span = float(kp[:, 0].max() - kp[:, 0].min())
+            kp_y_span = float(kp[:, 1].max() - kp[:, 1].min())
+        else:
+            kp_x_span = 0.0
+            kp_y_span = 0.0
+        logger.warning(
+            "DEBUG_TARGETS ann=%s bbox_xywh=%s polys=%s pts=%s kp_span_norm=(%.4f, %.4f)",
+            idx,
+            [round(float(v), 2) for v in bbox],
+            n_polys,
+            n_pts,
+            kp_x_span,
+            kp_y_span,
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -241,6 +288,8 @@ class FiberDatasetMapper:
                 else:
                     kps_list.append(np.zeros((NUM_KEYPOINTS, 3), dtype=np.float32))
             target.gt_keypoints = Keypoints(np.stack(kps_list))
+
+        _log_debug_targets(dataset_dict, image_shape, anns, polys, kps_list)
 
         for field_name in (
             "fiber_width",
