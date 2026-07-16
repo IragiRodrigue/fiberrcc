@@ -90,6 +90,9 @@ class FiberROIHeads(StandardROIHeads):
         self.enable_fiber_regression = bool(cfg.MODEL.FIBER_HEADS.ENABLE_REGRESSION)
         self.enable_fiber_quality = bool(cfg.MODEL.FIBER_HEADS.ENABLE_QUALITY)
         self.use_standard_mask_head = bool(cfg.MODEL.FIBER_HEADS.USE_STANDARD_MASK_HEAD)
+        self.use_standard_keypoint_head = bool(
+            cfg.MODEL.FIBER_HEADS.USE_STANDARD_KEYPOINT_HEAD
+        )
         self.fiber_mask_loss_weight = float(cfg.MODEL.FIBER_HEADS.LOSS_WEIGHT_MASK)
         self.fiber_keypoint_loss_weight = float(cfg.MODEL.FIBER_HEADS.LOSS_WEIGHT_KEYPOINTS)
 
@@ -176,12 +179,18 @@ class FiberROIHeads(StandardROIHeads):
             # ── Fiber heads ───────────────────────────────────────────
             if self.use_standard_mask_head:
                 losses.update(StandardROIHeads._forward_mask(self, features, proposals))
+            if self.use_standard_keypoint_head:
+                losses.update(StandardROIHeads._forward_keypoint(self, features, proposals))
             losses.update(self._forward_fiber_heads_train(feature_list, proposals))
             return [], losses
         else:
             pred_instances, _ = self.box_predictor.inference(predictions, proposals)
             if self.use_standard_mask_head:
                 pred_instances = StandardROIHeads._forward_mask(self, features, pred_instances)
+            if self.use_standard_keypoint_head:
+                pred_instances = StandardROIHeads._forward_keypoint(
+                    self, features, pred_instances
+                )
             pred_instances = self._forward_fiber_heads_inference(
                 feature_list, pred_instances
             )
@@ -257,7 +266,11 @@ class FiberROIHeads(StandardROIHeads):
                 )
 
         # ── Keypoints (already normalised [0,1] by converter) ────────
-        if self.enable_fiber_keypoints and all(hasattr(p, "gt_keypoints") for p in fg_only):
+        if (
+            self.enable_fiber_keypoints
+            and not self.use_standard_keypoint_head
+            and all(hasattr(p, "gt_keypoints") for p in fg_only)
+        ):
             gt_kps = torch.cat(
                 [
                     _gt_keypoints_to_box_normalized(
@@ -348,7 +361,7 @@ class FiberROIHeads(StandardROIHeads):
             pred_masks, _ = self.fiber_mask_head(feats)
             mask_rcnn_inference(pred_masks, pred_instances)
 
-        if self.enable_fiber_keypoints:
+        if self.enable_fiber_keypoints and not self.use_standard_keypoint_head:
             pred_kps, _ = self.fiber_keypoint_head(feats)
             pred_kps_scores = torch.ones(
                 (*pred_kps.shape[:2], 1),
