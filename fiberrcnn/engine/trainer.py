@@ -32,6 +32,7 @@ from detectron2.config import CfgNode, get_cfg
 from detectron2.data import build_detection_test_loader, build_detection_train_loader
 from detectron2.engine import DefaultTrainer, HookBase, hooks
 from detectron2.evaluation import COCOEvaluator, DatasetEvaluators
+from detectron2.solver import maybe_add_gradient_clipping
 from detectron2.utils import comm
 from detectron2.utils.events import EventStorage, get_event_storage
 from torch.utils.tensorboard import SummaryWriter
@@ -272,6 +273,30 @@ class FiberTrainer(DefaultTrainer):
             output_folder = os.path.join(cfg.OUTPUT_DIR, "inference")
         return COCOEvaluator(dataset_name, cfg, True, output_folder)
 
+    @classmethod
+    def build_optimizer(cls, cfg: CfgNode, model: torch.nn.Module):
+        params: list[dict[str, Any]] = []
+        base_lr = float(cfg.SOLVER.BASE_LR)
+        base_wd = float(cfg.SOLVER.WEIGHT_DECAY)
+        head_lr_factor = float(cfg.SOLVER.CUSTOM_HEAD_LR_FACTOR)
+
+        for name, param in model.named_parameters():
+            if not param.requires_grad:
+                continue
+            lr = base_lr
+            if "roi_heads.fiber_" in name:
+                lr *= head_lr_factor
+            wd = 0.0 if ("bias" in name or "norm" in name or "bn" in name) else base_wd
+            params.append({"params": [param], "lr": lr, "weight_decay": wd})
+
+        optimizer = torch.optim.SGD(
+            params,
+            lr=base_lr,
+            momentum=float(cfg.SOLVER.MOMENTUM),
+            nesterov=False,
+        )
+        return maybe_add_gradient_clipping(cfg, optimizer)
+
     # ------------------------------------------------------------------
     # Hooks
     # ------------------------------------------------------------------
@@ -350,6 +375,9 @@ def build_fiber_cfg(
     cfg.MODEL.FIBER_HEADS.ENABLE_KEYPOINTS = True
     cfg.MODEL.FIBER_HEADS.ENABLE_REGRESSION = True
     cfg.MODEL.FIBER_HEADS.ENABLE_QUALITY = True
+    cfg.MODEL.FIBER_HEADS.LOSS_WEIGHT_MASK = 2.0
+    cfg.MODEL.FIBER_HEADS.LOSS_WEIGHT_KEYPOINTS = 2.0
+    cfg.SOLVER.CUSTOM_HEAD_LR_FACTOR = 3.0
     cfg.merge_from_file(base_config_file)
     cfg.DATASETS.TRAIN = (dataset_train,)
     cfg.DATASETS.TEST = (dataset_val,)

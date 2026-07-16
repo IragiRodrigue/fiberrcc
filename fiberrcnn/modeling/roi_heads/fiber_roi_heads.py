@@ -89,6 +89,8 @@ class FiberROIHeads(StandardROIHeads):
         self.enable_fiber_keypoints = bool(cfg.MODEL.FIBER_HEADS.ENABLE_KEYPOINTS)
         self.enable_fiber_regression = bool(cfg.MODEL.FIBER_HEADS.ENABLE_REGRESSION)
         self.enable_fiber_quality = bool(cfg.MODEL.FIBER_HEADS.ENABLE_QUALITY)
+        self.fiber_mask_loss_weight = float(cfg.MODEL.FIBER_HEADS.LOSS_WEIGHT_MASK)
+        self.fiber_keypoint_loss_weight = float(cfg.MODEL.FIBER_HEADS.LOSS_WEIGHT_KEYPOINTS)
 
         in_features = cfg.MODEL.ROI_HEADS.IN_FEATURES
         pooler_resolution = 14
@@ -231,7 +233,7 @@ class FiberROIHeads(StandardROIHeads):
             if gt_masks.shape[0] > 0:
                 pred_masks, loss = self.fiber_mask_head(feats, gt_masks)
                 if loss is not None:
-                    losses["loss_fiber_mask"] = loss
+                    losses["loss_fiber_mask"] = loss * self.fiber_mask_loss_weight
                 gt_occ = gt_masks.float().mean().item()
                 pred_prob = torch.sigmoid(pred_masks.detach())
                 self._debug_log_head_stats(
@@ -243,6 +245,7 @@ class FiberROIHeads(StandardROIHeads):
                         "pred_prob_min": round(pred_prob.min().item(), 4),
                         "pred_prob_max": round(pred_prob.max().item(), 4),
                         "loss": round(float(loss.item()) if loss is not None else 0.0, 4),
+                        "weighted_loss": round(float((loss * self.fiber_mask_loss_weight).item()) if loss is not None else 0.0, 4),
                     },
                 )
 
@@ -264,7 +267,7 @@ class FiberROIHeads(StandardROIHeads):
                     feats, gt_kps[:, :, :2], weights=gt_kps[:, :, 2]
                 )
                 if loss is not None:
-                    losses["loss_keypoints"] = loss
+                    losses["loss_keypoints"] = loss * self.fiber_keypoint_loss_weight
                 gt_span_x = (gt_kps[:, :, 0].max(dim=1).values - gt_kps[:, :, 0].min(dim=1).values).mean()
                 gt_span_y = (gt_kps[:, :, 1].max(dim=1).values - gt_kps[:, :, 1].min(dim=1).values).mean()
                 pred_span_x = (pred_kps[:, :, 0].max(dim=1).values - pred_kps[:, :, 0].min(dim=1).values).mean()
@@ -278,6 +281,7 @@ class FiberROIHeads(StandardROIHeads):
                         "pred_span_x": round(pred_span_x.item(), 4),
                         "pred_span_y": round(pred_span_y.item(), 4),
                         "loss": round(float(loss.item()) if loss is not None else 0.0, 4),
+                        "weighted_loss": round(float((loss * self.fiber_keypoint_loss_weight).item()) if loss is not None else 0.0, 4),
                     },
                 )
 

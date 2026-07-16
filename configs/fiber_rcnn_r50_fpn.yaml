@@ -52,8 +52,11 @@ MODEL:
     NUM_CONV: 4
     CONV_DIM: 256
     NORM: ""
-  MASK_ON: False
-  KEYPOINT_ON: False
+  ROI_KEYPOINT_HEAD:
+    NUM_KEYPOINTS: 40
+  # Keep standard Detectron2 switches aligned with the custom Fiber heads.
+  MASK_ON: True
+  KEYPOINT_ON: True
   DEVICE: "cuda"
   # Pre-trained ResNet50 weights from Detectron2 model zoo
   WEIGHTS: "detectron2://ImageNetPretrained/MSRA/R-50.pkl"
