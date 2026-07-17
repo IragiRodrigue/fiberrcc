@@ -1,0 +1,127 @@
+{
+  "config": "configs\\fiber_rcnn_r50_fpn_thin_fiber.yaml",
+  "weights": "output\\run_rpn_tune_c_ckpt\\model_final.pth",
+  "dataset_json": "data\\coco_fiber_v3\\val.json",
+  "image_root": "data\\raw",
+  "images_evaluated": 2,
+  "topk_proposals": 100,
+  "thresholds": [
+    0.3,
+    0.5,
+    0.7
+  ],
+  "global": {
+    "proposals": {
+      "count": 112,
+      "mean_best_iou": 0.10467916299031847,
+      "median_best_iou": 0.09859858453273773,
+      "recall@0.30": 0.03571428571428571,
+      "recall@0.50": 0.0,
+      "recall@0.70": 0.0
+    },
+    "detections": {
+      "count": 112,
+      "mean_best_iou": 0.14086635131388903,
+      "median_best_iou": 0.12580415606498718,
+      "recall@0.30": 0.05357142857142857,
+      "recall@0.50": 0.008928571428571428,
+      "recall@0.70": 0.0
+    }
+  },
+  "worst_images": [
+    {
+      "image_id": 1,
+      "file_name": "data\\raw\\2_0006.jpg",
+      "gt_count": 52,
+      "proposal_count": 100,
+      "detection_count": 38,
+      "proposals": {
+        "count": 52,
+        "mean_best_iou": 0.10275795828112258,
+        "median_best_iou": 0.09732577949762344,
+        "recall@0.30": 0.038461538461538464,
+        "recall@0.50": 0.0,
+        "recall@0.70": 0.0
+      },
+      "detections": {
+        "count": 52,
+        "mean_best_iou": 0.14463346727335682,
+        "median_best_iou": 0.13563595712184906,
+        "recall@0.30": 0.038461538461538464,
+        "recall@0.50": 0.0,
+        "recall@0.70": 0.0
+      }
+    },
+    {
+      "image_id": 2,
+      "file_name": "data\\raw\\2_0008.jpg",
+      "gt_count": 60,
+      "proposal_count": 100,
+      "detection_count": 45,
+      "proposals": {
+        "count": 60,
+        "mean_best_iou": 0.1063442070716216,
+        "median_best_iou": 0.10440688580274582,
+        "recall@0.30": 0.03333333333333333,
+        "recall@0.50": 0.0,
+        "recall@0.70": 0.0
+      },
+      "detections": {
+        "count": 60,
+        "mean_best_iou": 0.13760151748235028,
+        "median_best_iou": 0.12580415606498718,
+        "recall@0.30": 0.06666666666666667,
+        "recall@0.50": 0.016666666666666666,
+        "recall@0.70": 0.0
+      }
+    }
+  ],
+  "per_image": [
+    {
+      "image_id": 1,
+      "file_name": "data\\raw\\2_0006.jpg",
+      "gt_count": 52,
+      "proposal_count": 100,
+      "detection_count": 38,
+      "proposals": {
+        "count": 52,
+        "mean_best_iou": 0.10275795828112258,
+        "median_best_iou": 0.09732577949762344,
+        "recall@0.30": 0.038461538461538464,
+        "recall@0.50": 0.0,
+        "recall@0.70": 0.0
+      },
+      "detections": {
+        "count": 52,
+        "mean_best_iou": 0.14463346727335682,
+        "median_best_iou": 0.13563595712184906,
+        "recall@0.30": 0.038461538461538464,
+        "recall@0.50": 0.0,
+        "recall@0.70": 0.0
+      }
+    },
+    {
+      "image_id": 2,
+      "file_name": "data\\raw\\2_0008.jpg",
+      "gt_count": 60,
+      "proposal_count": 100,
+      "detection_count": 45,
+      "proposals": {
+        "count": 60,
+        "mean_best_iou": 0.1063442070716216,
+        "median_best_iou": 0.10440688580274582,
+        "recall@0.30": 0.03333333333333333,
+        "recall@0.50": 0.0,
+        "recall@0.70": 0.0
+      },
+      "detections": {
+        "count": 60,
+        "mean_best_iou": 0.13760151748235028,
+        "median_best_iou": 0.12580415606498718,
+        "recall@0.30": 0.06666666666666667,
+        "recall@0.50": 0.016666666666666666,
+        "recall@0.70": 0.0
+      }
+    }
+  ]
+}

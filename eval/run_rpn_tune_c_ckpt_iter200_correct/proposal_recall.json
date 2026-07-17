@@ -1,0 +1,127 @@
+{
+  "config": "configs\\fiber_rcnn_r50_fpn_thin_fiber.yaml",
+  "weights": "output\\run_rpn_tune_c_ckpt\\model_0000199.pth",
+  "dataset_json": "data\\coco_fiber_v3\\val.json",
+  "image_root": "data\\raw",
+  "images_evaluated": 2,
+  "topk_proposals": 100,
+  "thresholds": [
+    0.3,
+    0.5,
+    0.7
+  ],
+  "global": {
+    "proposals": {
+      "count": 112,
+      "mean_best_iou": 0.019656239119025747,
+      "median_best_iou": 0.005245778243988752,
+      "recall@0.30": 0.0,
+      "recall@0.50": 0.0,
+      "recall@0.70": 0.0
+    },
+    "detections": {
+      "count": 112,
+      "mean_best_iou": 0.0,
+      "median_best_iou": 0.0,
+      "recall@0.30": 0.0,
+      "recall@0.50": 0.0,
+      "recall@0.70": 0.0
+    }
+  },
+  "worst_images": [
+    {
+      "image_id": 2,
+      "file_name": "data\\raw\\2_0008.jpg",
+      "gt_count": 60,
+      "proposal_count": 100,
+      "detection_count": 0,
+      "proposals": {
+        "count": 60,
+        "mean_best_iou": 0.019033747535043707,
+        "median_best_iou": 0.0,
+        "recall@0.30": 0.0,
+        "recall@0.50": 0.0,
+        "recall@0.70": 0.0
+      },
+      "detections": {
+        "count": 60,
+        "mean_best_iou": 0.0,
+        "median_best_iou": 0.0,
+        "recall@0.30": 0.0,
+        "recall@0.50": 0.0,
+        "recall@0.70": 0.0
+      }
+    },
+    {
+      "image_id": 1,
+      "file_name": "data\\raw\\2_0006.jpg",
+      "gt_count": 52,
+      "proposal_count": 100,
+      "detection_count": 0,
+      "proposals": {
+        "count": 52,
+        "mean_best_iou": 0.02037449863900502,
+        "median_best_iou": 0.00799938477575779,
+        "recall@0.30": 0.0,
+        "recall@0.50": 0.0,
+        "recall@0.70": 0.0
+      },
+      "detections": {
+        "count": 52,
+        "mean_best_iou": 0.0,
+        "median_best_iou": 0.0,
+        "recall@0.30": 0.0,
+        "recall@0.50": 0.0,
+        "recall@0.70": 0.0
+      }
+    }
+  ],
+  "per_image": [
+    {
+      "image_id": 2,
+      "file_name": "data\\raw\\2_0008.jpg",
+      "gt_count": 60,
+      "proposal_count": 100,
+      "detection_count": 0,
+      "proposals": {
+        "count": 60,
+        "mean_best_iou": 0.019033747535043707,
+        "median_best_iou": 0.0,
+        "recall@0.30": 0.0,
+        "recall@0.50": 0.0,
+        "recall@0.70": 0.0
+      },
+      "detections": {
+        "count": 60,
+        "mean_best_iou": 0.0,
+        "median_best_iou": 0.0,
+        "recall@0.30": 0.0,
+        "recall@0.50": 0.0,
+        "recall@0.70": 0.0
+      }
+    },
+    {
+      "image_id": 1,
+      "file_name": "data\\raw\\2_0006.jpg",
+      "gt_count": 52,
+      "proposal_count": 100,
+      "detection_count": 0,
+      "proposals": {
+        "count": 52,
+        "mean_best_iou": 0.02037449863900502,
+        "median_best_iou": 0.00799938477575779,
+        "recall@0.30": 0.0,
+        "recall@0.50": 0.0,
+        "recall@0.70": 0.0
+      },
+      "detections": {
+        "count": 52,
+        "mean_best_iou": 0.0,
+        "median_best_iou": 0.0,
+        "recall@0.30": 0.0,
+        "recall@0.50": 0.0,
+        "recall@0.70": 0.0
+      }
+    }
+  ]
+}
