@@ -1,0 +1,4 @@
+2026-07-16 19:44:17.996 | INFO     | __main__:main:101 - Output dir : output\run_thin_fiber_std_kp
+2026-07-16 19:44:17.997 | INFO     | __main__:main:102 - Batch size : 1
+2026-07-16 19:44:17.997 | INFO     | __main__:main:103 - Max iter   : 5000
+2026-07-17 00:51:51.135 | SUCCESS  | __main__:main:120 - Training complete → output\run_thin_fiber_std_kp

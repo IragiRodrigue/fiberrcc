@@ -1,0 +1,4 @@
+2026-07-17 13:18:08.924 | INFO     | __main__:main:101 - Output dir : output\run_rpn_tune_b
+2026-07-17 13:18:08.925 | INFO     | __main__:main:102 - Batch size : 1
+2026-07-17 13:18:08.925 | INFO     | __main__:main:103 - Max iter   : 400
+2026-07-17 13:21:00.789 | SUCCESS  | __main__:main:120 - Training complete → output\run_rpn_tune_b
