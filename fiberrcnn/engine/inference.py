@@ -57,6 +57,11 @@ def _add_fiber_cfg_defaults(cfg: Any) -> None:
     cfg.MODEL.FIBER_HEADS.ENABLE_QUALITY = True
     cfg.MODEL.FIBER_HEADS.USE_STANDARD_MASK_HEAD = False
     cfg.MODEL.FIBER_HEADS.USE_STANDARD_KEYPOINT_HEAD = False
+    cfg.MODEL.FIBER_HEADS.LOSS_WEIGHT_MASK = 2.0
+    cfg.MODEL.FIBER_HEADS.LOSS_WEIGHT_KEYPOINTS = 2.0
+    if not hasattr(cfg, "SOLVER"):
+        cfg.SOLVER = CfgNode()
+    cfg.SOLVER.CUSTOM_HEAD_LR_FACTOR = 3.0
 
 
 # ---------------------------------------------------------------------------
